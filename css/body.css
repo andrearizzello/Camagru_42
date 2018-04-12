@@ -1,3 +1,20 @@
 body {
     background: #111;
 }
+
+.p-description {
+    color: white;
+    font-family: 'Ubuntu', sans-serif;
+    margin-left: 200px;
+    margin-top: 70px;
+}
+
+.div-split {
+    box-sizing: ;
+}
+
+@media only screen and (max-width: 600px) {
+    .p-description {
+        margin-top: 100px;
+    }
+}
