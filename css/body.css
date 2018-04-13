@@ -5,16 +5,47 @@ body {
 .p-description {
     color: white;
     font-family: 'Ubuntu', sans-serif;
-    margin-left: 200px;
-    margin-top: 70px;
 }
 
 .div-split {
-    box-sizing: ;
+    margin-top: 3%;
+    margin-left: 8%;
+    display: inline-block;
+    width: 80%;
+    align-items: center;
+}
+
+.div-split > * {
+    box-sizing: border-box;
+    align-items: center;
+}
+
+.div-split > p {
+    display: inline-block;
+    line-height: 50px;
+}
+
+.btn-main-menu {
+    width: 10%;
+    background: #111;
+    border: 2px white solid;
+    border-radius: 2px;
+    color: white;
+    height: 50px;
+    float: right;
+    font-size: 25px;
+    font-family: 'VT323', monospace;
+    margin-right: 20px;
+}
+
+.img-cam {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 650px;
+    height: 620px;
+    z-index: -1;
 }
 
 @media only screen and (max-width: 600px) {
-    .p-description {
-        margin-top: 100px;
-    }
 }
