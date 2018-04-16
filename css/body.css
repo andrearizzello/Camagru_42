@@ -1,0 +1,73 @@
+body.background {
+    background: url("/imgs/camera-bkgr.jpg") no-repeat;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+div.header {
+    width: 100%;
+}
+
+h1.title {
+    font-family: 'Pacifico', cursive;
+    font-size: 4vw;
+    color: black;
+    padding-left: 0.8vw;
+    display: inline-block;
+    line-height: 100%;
+}
+
+button.golden {
+    background: #ff5800;
+    transform: skew(-20deg);
+    margin-right: 2vw;
+    width: 9vw;
+    height: 2vw;
+    border: unset;
+    float: right;
+    top: 2vw;
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+    animation-name: movement;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    visibility: hidden;
+}
+
+button.delay {
+    animation-delay: 0.5s;
+}
+
+button.delay-2 {
+    animation-delay: 1s;
+}
+
+@keyframes movement {
+    from {
+        right:-40%;
+    }
+    to  {
+        visibility: visible;
+        right: 0
+    }
+}
+
+span.fix-skew {
+    display: inline-block;
+    transform: skew(20deg);
+    font-size: 1.5vw;
+    color: white;
+}
+
+div.img-container {
+    background-color: white;
+    margin-top: 3vw;
+    position: relative;
+    left: 55%;
+    width: 42%;
+    height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.16), 0 0 2px 0 rgba(0,0,0,.12);
+}
