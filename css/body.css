@@ -1,8 +1,6 @@
 body.background {
-    background: url("/imgs/camera-bkgr.jpg") no-repeat;
-    background-size: cover;
-    background-position: center;
-    overflow: hidden;
+    background-color: #efeff1;
+    overflow-x: hidden;
 }
 
 div.header {
@@ -18,30 +16,39 @@ h1.title {
     line-height: 100%;
 }
 
+span.fix-skew {
+    display: inline-block;
+    transform: skew(20deg);
+    font-size: 1vw;
+    color: white;
+}
+
 button.golden {
     background: #ff5800;
+    box-shadow: 0.3vw 0.3vw 0 #d84b00;
     transform: skew(-20deg);
-    margin-right: 2vw;
+    margin-right: 3vw;
     width: 9vw;
     height: 2vw;
     border: unset;
     float: right;
-    top: 2vw;
+    top: 1.5vw;
     position: relative;
     cursor: pointer;
     text-decoration: none;
     animation-name: movement;
-    animation-duration: 2s;
+    animation-duration: 0.5s;
     animation-fill-mode: forwards;
     visibility: hidden;
+    text-align: center;
+    -webkit-transition: all .1s ease;
+    -moz-transition: all .1s ease;
+    -o-transition: all .1s ease;
+    transition: all .1s ease;
 }
 
 button.delay {
-    animation-delay: 0.5s;
-}
-
-button.delay-2 {
-    animation-delay: 1s;
+    animation-delay: 0.2s;
 }
 
 @keyframes movement {
@@ -50,24 +57,104 @@ button.delay-2 {
     }
     to  {
         visibility: visible;
-        right: 0
+        right: 0;
     }
 }
 
-span.fix-skew {
-    display: inline-block;
-    transform: skew(20deg);
-    font-size: 1.5vw;
-    color: white;
+button.golden:active {
+    -webkit-box-shadow: 0 1px 0 #d84b00;
+    -moz-box-shadow: 0 1px 0 #d84b00;
+    box-shadow: 0 1px 0 #d84b00;
+    position: relative;
+    top: 1.8vw;
+}
+
+button:focus {
+    outline:0;
 }
 
 div.img-container {
     background-color: white;
     margin-top: 3vw;
+    margin-left: 10%;
     position: relative;
-    left: 55%;
-    width: 42%;
+    width: 80%;
     height: 80vh;
     border-radius: 20px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,.16), 0 0 2px 0 rgba(0,0,0,.12);
+    margin-bottom: 3vh;
+}
+
+footer {
+    text-align: center;
+    background-color: #919193;
+    color: black;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 2vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer > p {
+    font-size: 2vh;
+}
+
+@media screen and (max-width: 600px) {
+
+    div.header {
+        width: 100%;
+        text-align: center;
+    }
+
+    h1.title {
+        font-family: 'Pacifico', cursive;
+        font-size: 20vw;
+        display: block;
+        color: black;
+    }
+    button.golden {
+        background: #ff5800;
+        box-shadow: 0 3vw 0 #d84b00;
+        transform: initial;
+        margin: unset;
+        width: 80%;
+        height: 25vw;
+        border: unset;
+        float: unset;
+        top: unset;
+        cursor: pointer;
+        text-decoration: none;
+        animation-name: movement;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+        visibility: hidden;
+        text-align: center;
+        -webkit-transition: all .1s ease;
+        -moz-transition: all .1s ease;
+        -o-transition: all .1s ease;
+        transition: all .1s ease;
+    }
+    button.golden:active {
+        -webkit-box-shadow: unset;
+        -moz-box-shadow: unset;
+        box-shadow: unset;
+        position: initial;
+        top: unset;
+    }
+    span.fix-skew {
+        display: initial;
+        transform: unset;
+        font-size: 10vw;
+        color: white;
+    }
+    #first {
+        margin-top: 10vw;
+        margin-bottom: 5vw;
+    }
+    #second {
+        margin-bottom: 10vw;
+    }
 }
