@@ -9,17 +9,11 @@
     <link rel="stylesheet" href="css/reset.css">
     <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon.png">
     <script>
-        function loadRegister() {
-            var div = document.getElementById("blackground");
-            if (div != null)
-                div.style.display = "initial";
-            var iframe = document.getElementById("iframe-login");
-            if (iframe != null)
-                iframe.style.display = "initial";
+        function redirectLogin() {
+            window.location.href = "login.html";
         }
-        function hideDiv(obj) {
-            if (obj != null)
-                obj.style.display = "none";
+        function redirectRegister() {
+            window.location.href = "register.html";
         }
     </script>
 </head>
@@ -27,8 +21,8 @@
 <header>
     <div class="header">
         <h1 class="title">Camagru</h1>
-        <button id="first" class="golden delay"><span class="fix-skew">Login</span></button>
-        <button id="second" class="golden" onclick="loadRegister()"><span class="fix-skew">Register</span></button>
+        <button id="first" class="golden delay" onclick="redirectLogin()"><span class="fix-skew">Login</span></button>
+        <button id="second" class="golden" onclick="redirectRegister()"><span class="fix-skew">Register</span></button>
     </div>
 </header>
 <div class="img-container">
@@ -37,7 +31,4 @@
 <footer>
     <p>Andrea Rizzello (@arizzell) 2018</p>
 </footer>
-<div id="blackground" class="login-register" onclick="hideDiv(this)">
-    <iframe id="iframe-login" class="iframe-login" src="login.html"></iframe>
-</div>
 </html>

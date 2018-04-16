@@ -102,35 +102,8 @@ footer > p {
     font-size: 2vh;
 }
 
-div.login-register {
-    text-align: center;
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-}
-
-iframe.iframe-login {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 0;
-    margin: auto;
-    display: none;
-    border-radius: 10px;
-}
-
 @media screen and (max-width: 600px) {
 
-    iframe.iframe-login {
-        width: 95%;
-        height: 70%;
-    }
     div.header {
         width: 100%;
         text-align: center;
@@ -140,6 +113,7 @@ iframe.iframe-login {
         font-size: 20vw;
         display: block;
         color: black;
+        margin-top: 3gvw;
     }
     button.golden {
         background: #ff5800;
@@ -167,8 +141,7 @@ iframe.iframe-login {
         -webkit-box-shadow: unset;
         -moz-box-shadow: unset;
         box-shadow: unset;
-        position: initial;
-        top: unset;
+        top: 1.5vw;
     }
     span.fix-skew {
         display: initial;
@@ -182,5 +155,8 @@ iframe.iframe-login {
     }
     #second {
         margin-bottom: 10vw;
+    }
+    div.img-container {
+        display: none;
     }
 }
