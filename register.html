@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Camagru - Register</title>
+    <link rel="stylesheet" href="css/body.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon.png">
+    <script>
+        function submit() {
+            var username = document.getElementById("username");
+            if (username == null || !username.value.length)
+            {
+                var alert = document.getElementById("custom-alert")
+                if (alert != null)
+                {
+                    alert.style.animationName = "custom-alert";
+                    //TODO: Finire (vedere snakbar/toast)
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="register-centered-div">
+    <div class="register-container">
+        <h1>Sign Up</h1>
+        <input id="username" type="text" placeholder="Username" maxlength="45" required>
+        <input id="email" type="email" placeholder="E-mail" maxlength="100" required>
+        <input id="password" type="password" placeholder="Password" required>
+        <input id="name" type="text" placeholder="Name" maxlength="45" required>
+        <input id="surname" type="text" placeholder="Surname" maxlength="45" required>
+        <button class="golden register" type="button" onclick="submit()"><span class="fix-skew">Sign Up</span></button>
+    </div>
+</div>
+<div id="custom-alert" class="custom-alert">
+    <p>Errore</p>
+</div>
+</body>
+</html>
