@@ -8,35 +8,22 @@
     <link rel="stylesheet" href="css/reset.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon.png">
-    <script>
-        function submit() {
-            var username = document.getElementById("username");
-            if (username == null || !username.value.length)
-            {
-                var alert = document.getElementById("custom-alert")
-                if (alert != null)
-                {
-                    alert.style.animationName = "custom-alert";
-                    //TODO: Finire (vedere snakbar/toast)
-                }
-            }
-        }
-    </script>
+    <script src="js/register_functions.js"></script>
 </head>
 <body>
 <div class="register-centered-div">
     <div class="register-container">
         <h1>Sign Up</h1>
-        <input id="username" type="text" placeholder="Username" maxlength="45" required>
-        <input id="email" type="email" placeholder="E-mail" maxlength="100" required>
-        <input id="password" type="password" placeholder="Password" required>
-        <input id="name" type="text" placeholder="Name" maxlength="45" required>
-        <input id="surname" type="text" placeholder="Surname" maxlength="45" required>
+        <input id="username" type="text" placeholder="Username" maxlength="45" required autofocus autocomplete="off">
+        <input id="email" type="email" placeholder="E-mail" maxlength="100" required autocomplete="off">
+        <input id="password" type="password" placeholder="Password" required onkeyup="passwordComplexity()" autocomplete="off">
+        <hr id="pwd_indicator" class="password_strength">
+        <input id="name" type="text" placeholder="Name" maxlength="45" required autocomplete="off">
+        <input id="surname" type="text" placeholder="Surname" maxlength="45" required autocomplete="off">
         <button class="golden register" type="button" onclick="submit()"><span class="fix-skew">Sign Up</span></button>
     </div>
 </div>
-<div id="custom-alert" class="custom-alert">
-    <p>Errore</p>
-</div>
+<div id="toast_error"></div>
+<div id="toast_ok"></div>
 </body>
 </html>
