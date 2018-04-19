@@ -19,6 +19,12 @@ span.fix-skew {
     font-size: 1vw;
     color: white;
 }
+span.fix-skew-greenbtn {
+    display: inline-block;
+    transform: skew(20deg);
+    font-size: 1vw;
+    color: white;
+}
 span.fix-skew::first-letter {
     text-transform: uppercase;
 }
@@ -46,6 +52,26 @@ button.btn-orange {
     transition: all .1s ease;
     font-family: 'Roboto', sans-serif;
 }
+button.btn-green {
+    background: green;
+    box-shadow: 0.3vw 0.3vw 0 darkgreen;
+    transform: skew(-20deg);
+    width: 9vw;
+    height: 2vw;
+    border: unset;
+    cursor: pointer;
+    text-decoration: none;
+    animation-name: movement-green;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    text-align: center;
+    -webkit-transition: all .1s ease;
+    -moz-transition: all .1s ease;
+    -o-transition: all .1s ease;
+    transition: all .1s ease;
+    font-family: 'Roboto', sans-serif;
+    margin-top: 30px;
+}
 button.delay {
     animation-delay: 0.2s;
 }
@@ -59,11 +85,13 @@ button.delay {
     }
 }
 button.btn-orange:active {
-    -webkit-box-shadow: 0 1px 0 #d84b00;
-    -moz-box-shadow: 0 1px 0 #d84b00;
-    box-shadow: 0 1px 0 #d84b00;
+    box-shadow: unset;
     position: relative;
     top: 1.8vw;
+}
+button.btn-green:active {
+    box-shadow: unset;
+    margin-top: 37px;
 }
 button.btn-orange.register {
     width: 100%;
@@ -281,6 +309,25 @@ hr.password_strength {
         -o-transition: all .1s ease;
         transition: all .1s ease;
     }
+    button.btn-green {
+        box-shadow: 7px 7px 0 darkgreen;
+        transform: skew(-20deg);
+        width: 80%;
+        height: 50px;
+        border: unset;
+        cursor: pointer;
+        text-decoration: none;
+        animation-name: movement-green;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+        text-align: center;
+        -webkit-transition: all .1s ease;
+        -moz-transition: all .1s ease;
+        -o-transition: all .1s ease;
+        transition: all .1s ease;
+        font-family: 'Roboto', sans-serif;
+        margin-top: 30px;
+    }
     button.btn-orange.register {
         width: 100%;
         float: unset;
@@ -293,6 +340,12 @@ hr.password_strength {
     span.fix-skew {
         display: initial;
         transform: unset;
+        font-size: 6vw;
+        color: white;
+    }
+    span.fix-skew-greenbtn {
+        display: inline-block;
+        transform: skew(20deg);
         font-size: 6vw;
         color: white;
     }
