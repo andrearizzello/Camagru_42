@@ -4,6 +4,9 @@ function redirectLogin() {
 function redirectRegister() {
     window.location.href = "register.php";
 }
+function redirectPA() {
+    window.location.href = "personal_page.html";
+}
 function login() {
     var username = document.getElementById("username");
     var password = document.getElementById("password");
@@ -35,7 +38,7 @@ function login() {
                 {
                     if (toast_error)
                     {
-                        toast_error.innerHTML = "Error, user not found";
+                        toast_error.innerHTML = "Error, user not found / Wrong Password";
                         toast_error.className = "show";
                         setTimeout(function() {
                             toast_error.className = toast_error.className.replace("show", "");
