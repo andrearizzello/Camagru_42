@@ -21,10 +21,11 @@ if (isset($_SESSION['user']))
 <body>
 <div class="register-centered-div">
     <div class="register-container">
-        <h1>Sign In</h1>
+        <h1 id="form-title">Sign In</h1>
         <input id="username" type="text" placeholder="Username" maxlength="12" required autofocus autocomplete="off">
         <input id="password" type="password" placeholder="Password" required autocomplete="off">
-        <button class="btn-orange register" type="button" onclick="login()"><span class="fix-skew">Sign In</span></button>
+        <button style="display: block" id="login-btn" class="btn-orange register" type="button" onclick="login()"><span class="fix-skew">Sign In</span></button>
+        <button style="display: block" id="restore-btn" class="btn-orange register delay" type="button" onclick="recoverPassword(this)"><span id="recover-text" class="fix-skew">Recover Password</span></button>
     </div>
 </div>
 <div id="redir_screen" style="display: none">
@@ -36,5 +37,6 @@ if (isset($_SESSION['user']))
     </div>
 </div>
 <div id="toast_error"></div>
+<div id="toast_ok"></div>
 </body>
 </html>

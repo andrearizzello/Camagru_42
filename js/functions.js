@@ -57,6 +57,55 @@ function login() {
         };
     }
 }
+function recoverPassword() {
+    var email = document.getElementById("username");
+    var password = document.getElementById("password");
+    var btnLogin = document.getElementById("login-btn");
+    var btnLabel = document.getElementById("recover-text");
+    var formTitle = document.getElementById("form-title");
+    var btnRestore = document.getElementById("restore-btn");
+    var toast_error = document.getElementById("toast_error");
+    var toast_ok = document.getElementById("toast_ok");
+
+    btnLogin.style.display = "none";
+    password.style.display = "none";
+    btnLabel.innerHTML = "Send activation link";
+    formTitle.innerHTML = "Recover Password";
+    email.placeholder = "Email";
+    email.maxLength = 100;
+    btnRestore.onclick = function () {
+        if (!email || !email.value.length || email.value.indexOf("@") === -1)
+        {
+            if (toast_error)
+            {
+                toast_error.innerHTML = "Error, please check email field";
+                toast_error.className = "show";
+                setTimeout(function() {
+                    toast_error.className = toast_error.className.replace("show", "");
+                }, 3000);
+            }
+        }
+        else {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "backend/functions.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("email="+email.value);
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    if (this.status === 201) {
+                        if (toast_ok) {
+                            toast_ok.innerHTML = "A new password has been sent!";
+                            toast_ok.className = "show";
+                            setTimeout(function () {
+                                toast_ok.className = toast_ok.className.replace("show", "");
+                            }, 3000);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 function register() {
     var username = document.getElementById("username");
     var email = document.getElementById("email");
@@ -126,8 +175,7 @@ function register() {
         };
     }
 }
-function destroy_session()
-{
+function destroy_session() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","backend/functions.php", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../config/database.php");
+include("$_SERVER[DOCUMENT_ROOT]/config/database.php");
 
 function debug($string_to_write) {
     $tmp = fopen("debug.log", "w");
@@ -19,6 +19,42 @@ function responseCode($http_code, $exit_code)
 {
     header("HTTP/1.0 $http_code");
     exit($exit_code);
+}
+function activateUser($token)
+{
+    GLOBAL $DB_DNS;
+    GLOBAL $DB_USER;
+    GLOBAL $DB_PASSWORD;
+    $hash = preg_replace("/[^a-fA-F0-9]/", "", trim($token));
+    try {
+        $pdobj = new PDO($DB_DNS, $DB_USER, $DB_PASSWORD);
+        $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    } catch (PDOException $e) {
+        die('Connection failed: ' . $e->getMessage());
+    }
+    $query = "SELECT iduser, activated FROM `users` WHERE `hash` = ?";
+    $db = $pdobj->prepare($query);
+    $db->bindParam(1,$hash);
+    $db->execute();
+    $result = $db->fetch(PDO::FETCH_ASSOC);
+    if ($result && $result['activated'] === 0)
+    {
+        $query = "UPDATE `users` SET `activated` = 1 WHERE iduser = ?";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1,$result['iduser'], PDO::PARAM_INT);
+        $db->execute();
+        return (0);
+    }
+    else
+        return (-1);
+}
+
+//DESTROY SESSION
+if (count($_POST) === 1 && isset($_POST['destroy']))
+{
+    session_destroy();
+    responseCode(200, 0);
 }
 
 //LOGIN
@@ -44,11 +80,13 @@ if (count($_POST) === 2 && isset($_POST['username'], $_POST['password']))
     $db->bindParam(2, $password, PDO::PARAM_STR);
     $db->execute();
     $result = $db->fetch(PDO::FETCH_ASSOC);
-    if ($result)
+    if ($result && $result['activated'] === 1)
     {
         $_SESSION['user'] = $result;
         responseCode(302, -1);
     }
+    elseif ($result && $result['activated'] === 0)
+        responseCode(401, -1);
     else
         responseCode(404, -1);
 }
@@ -120,17 +158,12 @@ if (count($_POST) === 5 && isset($_POST['username'], $_POST['email'], $_POST['pa
     }
 }
 
-//DESTROY SESSION
-if (count($_POST) === 1 && isset($_POST['destroy']))
+//RESTORE PASSWORD
+if (count($_POST) === 1 && isset($_POST['email']))
 {
-    session_destroy();
-    responseCode(200, 0);
-}
-
-//VERIFY ACCOUNT
-if (count($_GET) === 1 && isset($_GET['token']))
-{
-    $hash = preg_replace("/[^a-fA-F0-9]/", "", trim($_GET['token']));
+    global $DB_DNS;
+    global $DB_USER;
+    global $DB_PASSWORD;
     try {
         $pdobj = new PDO($DB_DNS, $DB_USER, $DB_PASSWORD);
         $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -138,18 +171,28 @@ if (count($_GET) === 1 && isset($_GET['token']))
     } catch (PDOException $e) {
         die('Connection failed: ' . $e->getMessage());
     }
-    $query = "SELECT iduser FROM `users` WHERE `hash` = ?";
+    $query = "SELECT `iduser`, `name` `password`, `email` FROM users WHERE `email` = ?";
+    if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+        responseCode(400, -1);
     $db = $pdobj->prepare($query);
-    $db->bindParam(1,$hash);
+    $db->bindParam(1, $_POST['email'], PDO::PARAM_STR);
     $db->execute();
     $result = $db->fetch(PDO::FETCH_ASSOC);
     if ($result)
     {
-        $query = "UPDATE `users` SET `activated` = 1 WHERE iduser = ?";
-        $db->bindParam(1,$result['iduser'], PDO::PARAM_INT);
+        $password = substr($result['password'], 0, 10);
+        $hashedPW = hash("whirlpool", $password);
+        $query = "UPDATE `users` SET `password` = ? WHERE `iduser` = ?";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1, $hashedPW, PDO::PARAM_STR);
+        $db->bindParam(2, $result['iduser'], PDO::PARAM_INT);
         $db->execute();
-        responseCode(200, 0);
+        $header = 'Content-type: text/html; charset=UTF-8' . "\r\n";
+        $header .= 'From: <arizzell@student.42.fr>' . "\r\n";
+        $msg = 'Hello '.$result['name'].' this is your new password '.$password;
+        mail($result['email'], "[RESTORING PASSWORD]", $msg, $header);
+        responseCode(201, 0);
     }
     else
-        responseCode(304, -1);
+        responseCode(400, -1);
 }
