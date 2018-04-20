@@ -141,7 +141,7 @@ if (count($_POST) === 5 && isset($_POST['username'], $_POST['email'], $_POST['pa
                 $fullname = $name." ".$surname;
                 $header = 'Content-type: text/html; charset=UTF-8' . "\r\n";
                 $header .= 'From: <arizzell@student.42.fr>' . "\r\n";
-                $msg = 'Hello '.$fullname.'<br>To finalyze your subscribtion please click <a href="http://'.$_SERVER['HTTP_HOST'].'/verify.php?token='.$hash.'">HERE</a> to validate your profile';
+                $msg = 'Hello '.$fullname.'<br>To finalize your subscription please click <a href="http://'.$_SERVER['HTTP_HOST'].'/verify.php?token='.$hash.'">HERE</a>';
                 mail($email,"[ACCOUNT VERIFICATION]", $msg, $header);
                 responseCode(201, 0);
             }
@@ -171,7 +171,7 @@ if (count($_POST) === 1 && isset($_POST['email']))
     } catch (PDOException $e) {
         die('Connection failed: ' . $e->getMessage());
     }
-    $query = "SELECT `iduser`, `name` `password`, `email` FROM users WHERE `email` = ?";
+    $query = "SELECT `iduser`, `name`, `password`, `email` FROM users WHERE `email` = ?";
     if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
         responseCode(400, -1);
     $db = $pdobj->prepare($query);
@@ -180,19 +180,24 @@ if (count($_POST) === 1 && isset($_POST['email']))
     $result = $db->fetch(PDO::FETCH_ASSOC);
     if ($result)
     {
+        debug($result);
         $password = substr($result['password'], 0, 10);
         $hashedPW = hash("whirlpool", $password);
+        $iduser = $result['iduser'];
+        $name = $result['name'];
+        $email = $result['email'];
+
         $query = "UPDATE `users` SET `password` = ? WHERE `iduser` = ?";
         $db = $pdobj->prepare($query);
         $db->bindParam(1, $hashedPW, PDO::PARAM_STR);
-        $db->bindParam(2, $result['iduser'], PDO::PARAM_INT);
+        $db->bindParam(2, $iduser, PDO::PARAM_INT);
         $db->execute();
         $header = 'Content-type: text/html; charset=UTF-8' . "\r\n";
         $header .= 'From: <arizzell@student.42.fr>' . "\r\n";
-        $msg = 'Hello '.$result['name'].' this is your new password '.$password;
-        mail($result['email'], "[RESTORING PASSWORD]", $msg, $header);
+        $msg = 'Hello '.$name.' this is your new password '.$password;
+        mail($email, "[RESTORING PASSWORD]", $msg, $header);
         responseCode(201, 0);
     }
     else
-        responseCode(400, -1);
+        responseCode(404, -1);
 }

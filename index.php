@@ -19,7 +19,7 @@ session_start();
         <h1 class="title">Camagru</h1>
         <?php if (isset($_SESSION['user'])) : ?>
             <button id="first" class="btn-orange delay" onclick="destroy_session()"><span class="fix-skew">Logout</span></button>
-            <button id="second" class="btn-orange" onclick="redirectLogin()"><span class="fix-skew"><?=$_SESSION['user']['name'][0].$_SESSION['user']['surname'][0]?></span></button>
+            <button id="second" class="btn-orange" onclick="redirectLogin()"><span class="fix-skew">Personal Area</span></button>
         <?php else: ?>
             <button id="first" class="btn-orange delay" onclick="redirectRegister()"><span class="fix-skew">Register</span></button>
             <button id="second" class="btn-orange" onclick="redirectLogin()"><span class="fix-skew">Login</span></button>

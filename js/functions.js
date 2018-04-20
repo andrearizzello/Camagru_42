@@ -53,6 +53,17 @@ function login() {
                         }, 3000);
                     }
                 }
+                if (this.status === 401)
+                {
+                    if (toast_error)
+                    {
+                        toast_error.innerHTML = "Error, please click on the validation link sent to your email";
+                        toast_error.className = "show";
+                        setTimeout(function() {
+                            toast_error.className = toast_error.className.replace("show", "");
+                        }, 3000);
+                    }
+                }
             }
         };
     }
@@ -98,6 +109,26 @@ function recoverPassword() {
                             toast_ok.className = "show";
                             setTimeout(function () {
                                 toast_ok.className = toast_ok.className.replace("show", "");
+                            }, 3000);
+                        }
+                    }
+                    if (this.status === 400)
+                    {
+                        if (toast_error) {
+                            toast_error.innerHTML = "Error, please check the email field";
+                            toast_error.className = "show";
+                            setTimeout(function () {
+                                toast_error.className = toast_error.className.replace("show", "");
+                            }, 3000);
+                        }
+                    }
+                    if (this.status === 404)
+                    {
+                        if (toast_error) {
+                            toast_error.innerHTML = "Error, user not found";
+                            toast_error.className = "show";
+                            setTimeout(function () {
+                                toast_error.className = toast_error.className.replace("show", "");
                             }, 3000);
                         }
                     }
