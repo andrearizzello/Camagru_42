@@ -5,7 +5,7 @@ function redirectRegister() {
     window.location.href = "register.php";
 }
 function redirectPA() {
-    window.location.href = "personal_page.html";
+    window.location.href = "personal_page.php";
 }
 function login() {
     var username = document.getElementById("username");
@@ -323,4 +323,22 @@ function badValueUP(username, password, toast_error) {
         return (1);
     }
     return (0);
+}
+
+function getCamera() {
+    const constraints = {
+        video: true
+    };
+
+    const video = document.getElementById("camera");
+
+    function success(stream) {
+        video.srcObject = stream;
+    }
+
+    function error(error) {
+        //TODO: Print something user no permission
+    }
+
+    navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
 }

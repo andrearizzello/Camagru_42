@@ -52,6 +52,30 @@ button.btn-orange {
     transition: all .1s ease;
     font-family: 'Roboto', sans-serif;
 }
+button.btn-blue {
+    background: #161e58;
+    box-shadow: 0.3vw 0.3vw 0 #00062d;
+    transform: skew(-20deg);
+    margin-right: 3vw;
+    width: 9vw;
+    height: 2vw;
+    border: unset;
+    float: right;
+    top: 1.5vw;
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+    animation-name: movement;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    visibility: hidden;
+    text-align: center;
+    -webkit-transition: all .1s ease;
+    -moz-transition: all .1s ease;
+    -o-transition: all .1s ease;
+    transition: all .1s ease;
+    font-family: 'Roboto', sans-serif;
+}
 button.btn-green {
     background: green;
     box-shadow: 0.3vw 0.3vw 0 darkgreen;
@@ -92,6 +116,30 @@ button.btn-red {
     font-family: 'Roboto', sans-serif;
     margin-top: 30px;
 }
+button.btn-red-index {
+    background: #bf0000;
+    box-shadow: 0.3vw 0.3vw 0 #6b0000;
+    transform: skew(-20deg);
+    margin-right: 3vw;
+    width: 9vw;
+    height: 2vw;
+    border: unset;
+    float: right;
+    top: 1.5vw;
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+    animation-name: movement;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    visibility: hidden;
+    text-align: center;
+    -webkit-transition: all .1s ease;
+    -moz-transition: all .1s ease;
+    -o-transition: all .1s ease;
+    transition: all .1s ease;
+    font-family: 'Roboto', sans-serif;
+}
 button.delay {
     animation-delay: 0.2s;
 }
@@ -116,6 +164,16 @@ button.btn-green:active {
 button.btn-red:active {
     box-shadow: unset;
     margin-top: 37px;
+}
+button.btn-red-index:active {
+    box-shadow: unset;
+    position: relative;
+    top: 1.8vw;
+}
+button.btn-blue:active {
+    box-shadow: unset;
+    position: relative;
+    top: 1.8vw;
 }
 button.btn-orange.register {
     width: 100%;
