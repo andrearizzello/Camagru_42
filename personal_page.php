@@ -1,4 +1,8 @@
-
+<?php
+session_start();
+if (!isset($_SESSION['user']))
+    header("Location: index.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,11 +24,10 @@
 <header style="text-align: center">
     <h1 style="font-family: 'Roboto', sans-serif; font-size: 300%">Your personal zone</h1>
 </header>
-<div class="camera-container">
-    <video id="camera" autoplay style="width: 640px; height: 480px"></video>
-</div>
-<div class="preview-container">
-
+<div style="text-align: center">
+    <video id="camera" autoplay></video>
+    <img src="imgs/photo-camera.svg" style="width: 40px">
+    <div style="width: 300px; height: 500px; background-color: black"></div>
 </div>
 </body>
 </html>
