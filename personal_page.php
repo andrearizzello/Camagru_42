@@ -24,10 +24,35 @@ if (!isset($_SESSION['user']))
 <header style="text-align: center">
     <h1 style="font-family: 'Roboto', sans-serif; font-size: 300%">Your personal zone</h1>
 </header>
-<div style="text-align: center">
-    <video id="camera" autoplay></video>
-    <img src="imgs/photo-camera.svg" style="width: 40px">
-    <div style="width: 300px; height: 500px; background-color: black"></div>
+<!--TODO: Addare la possibilita di fare logout-->
+<div class="flex-container">
+    <div class="superpos-container">
+        <div style="display: block">
+            <img id="pic-hat" src="imgs/hat.png"><br>
+            <label for="graduation-hat">Hat</label>
+            <input id="graduation-hat" name="mask" type="radio" value="1" onchange="trigger(this)">
+        </div>
+        <div style="display: block">
+            <img id="pic-glasses" src="imgs/sunglasses.png"><br>
+            <label for="sunglasses">Sunglasses</label>
+            <input id="sunglasses" name="mask" type="radio" value="2" onchange="trigger(this)">
+        </div>
+        <div style="display: block">
+            <img id="pic-pipe" src="imgs/pipe.png"><br>
+            <label for="pipe">Pipe</label>
+            <input id="pipe" name="mask" type="radio" value="3" onchange="trigger(this)">
+        </div>
+    </div>
+    <div id="camera-container" class="camera-container">
+        <video id="camera" autoplay></video>
+        <img id="camera-icon" src="imgs/photo-camera.svg" onclick="takePicture()">
+        <img id="superpos" src="" class="selected">
+    </div>
+    <div id="prev-cont" class="preview-container">
+    </div>
 </div>
+<footer>
+    <p>Andrea Rizzello (@arizzell) 2018</p>
+</footer>
 </body>
 </html>

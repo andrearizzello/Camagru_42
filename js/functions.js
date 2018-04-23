@@ -324,7 +324,6 @@ function badValueUP(username, password, toast_error) {
     }
     return (0);
 }
-
 function getCamera() {
     const constraints = {
         video: true
@@ -336,9 +335,59 @@ function getCamera() {
         video.srcObject = stream;
     }
 
-    function error(error) {
-        //TODO: Print something user no permission
+    function error() {
+        var container = document.getElementById("camera-container");
+        if (container)
+        {
+            //TODO:Addare modalita di upload foto
+        }
     }
 
     navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+}
+function trigger(radio) {
+    var cameraButton = document.getElementById("camera-icon");
+    var cameraContainer = document.getElementById("camera-container");
+    var image = document.getElementById("superpos");
+    if (radio && cameraButton && cameraContainer && image) {
+        cameraButton.style.display = "initial";
+        image.style = "";
+        if (radio.value === "1")
+        {
+            image.src = "imgs/hat.png";
+            image.style.width = "200px";
+            image.style.left = "calc(50% - (200px/2))";
+        }
+        else if (radio.value === "2")
+        {
+            image.src = "imgs/sunglasses.png"
+            image.style.top = "80px";
+            image.style.width = "200px";
+            image.style.left = "calc(50% - (200px/2))";
+        }
+        else if (radio.value === "3")
+        {
+            image.src = "imgs/pipe.png";
+            image.style.top = "150px";
+            image.style.left = "400px";
+        }
+    }
+    else
+        cameraButton.style.display = "none";
+}
+function takePicture() {
+    var canvas = document.createElement("canvas");
+    var container = document.getElementById("prev-cont");
+    var camera = document.getElementById("camera");
+    var hat = document.getElementById("pic-hat");
+    var glasses = document.getElementById("pic-glasses");
+    var pipe = document.getElementById("pic-pipe");
+
+    //TODO: Elaborare img lato server
+    canvas.className = "photo-canvas";
+    canvas.width = camera.videoWidth;
+    canvas.height = camera.videoHeight;
+    canvas.getContext('2d').drawImage(camera, 0, 0);
+
+    container.appendChild(canvas);
 }

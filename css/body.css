@@ -345,6 +345,60 @@ hr.password_strength {
     from {bottom: 30px; opacity: 1;}
     to {bottom: 0; opacity: 0;}
 }
+div.flex-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    height: 100%;
+    margin: 30px 0;
+}
+.flex-container > * {
+    flex: 1 auto;
+}
+#camera-icon {
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(77, 77, 77, .8);
+    display: none;
+}
+div.camera-container {
+    position: relative;
+    text-align: center;
+    height: 480px;
+    flex: 0 0 640px;
+}
+div.superpos-container {
+    text-align: center;
+    border-top: 2px solid black;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    flex: 0 0 300px;
+}
+div.preview-container {
+    text-align: center;
+    border-top: 2px solid black;
+    border-left: 2px solid black;
+    border-bottom: 2px solid black;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    flex: 0 0 700px;
+}
+canvas.photo-canvas {
+    width: 60%;
+    border: 1px solid;
+    border-radius: 10px;
+}
+img.selected {
+    position: absolute;
+    top: 0;
+    left: calc(50% - (128px/2));
+}
 
 @media screen and (max-width: 600px) {
 
