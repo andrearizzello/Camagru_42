@@ -27,6 +27,7 @@ if (!isset($_SESSION['user']))
 <!--TODO: Addare la possibilita di fare logout-->
 <div class="flex-container">
     <div class="superpos-container">
+<!--        TODO: Addare il disable se non si trova la cam-->
         <div style="display: block">
             <img id="pic-hat" src="imgs/hat.png"><br>
             <label for="graduation-hat">Hat</label>
