@@ -378,7 +378,7 @@ div.superpos-container {
     border-bottom: 2px solid black;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
-    flex: 0 0 300px;
+    flex: 0 0 15vw;
 }
 div.preview-container {
     text-align: center;
@@ -387,7 +387,7 @@ div.preview-container {
     border-bottom: 2px solid black;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
-    flex: 0 0 700px;
+    flex: 0 0 20vw;
 }
 canvas.photo-canvas {
     width: 60%;
