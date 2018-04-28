@@ -388,6 +388,18 @@ function takePicture() {
     canvas.width = camera.videoWidth;
     canvas.height = camera.videoHeight;
     canvas.getContext('2d').drawImage(camera, 0, 0);
-
-    container.appendChild(canvas);
+    if (hat.checked)
+    {
+        console.log(canvas.toDataURL());
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST","backend/functions.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("photo="+canvas.toDataURL());
+        xhttp.onreadystatechange = function()
+        {
+            if (xhttp.readyState === 4)
+                if(xhttp.status === 200)
+                    container.appendChild(canvas);
+        };
+    }
 }

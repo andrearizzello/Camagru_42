@@ -3,6 +3,7 @@ session_start();
 include("$_SERVER[DOCUMENT_ROOT]/config/database.php");
 
 function debug($string_to_write) {
+    //TODO: REMOVE!
     $tmp = fopen("debug.log", "w");
     $total = "";
     if (is_array($string_to_write))
@@ -200,4 +201,14 @@ if (count($_POST) === 1 && isset($_POST['email']))
     }
     else
         responseCode(404, -1);
+}
+
+if (count($_POST) === 1 && isset($_POST['photo'], $_SESSION['user']))
+{
+    $data = $_POST['photo'];
+    list($type, $data) = explode(';', $data);
+    list(, $data)      = explode(',', $data);
+    $data = base64_decode($data);
+    file_put_contents("$_SERVER[DOCUMENT_ROOT]/userphoto/".getdate()[0]."_".$_SESSION['user']['iduser'].".png", $data);
+    responseCode(200, 0);
 }

@@ -2,6 +2,7 @@
 session_start();
 if (!isset($_SESSION['user']))
     header("Location: index.php");
+//print_r($_SESSION['user'])
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,25 +24,25 @@ if (!isset($_SESSION['user']))
 <body>
 <header style="text-align: center">
     <h1 style="font-family: 'Roboto', sans-serif; font-size: 300%">Your personal zone</h1>
+    <button id="first" class="btn-red-index delay" style="position: absolute; float: unset" onclick="destroy_session()"><span class="fix-skew">Logout</span></button>
 </header>
-<!--TODO: Addare la possibilita di fare logout-->
 <div class="flex-container">
     <div class="superpos-container">
 <!--        TODO: Addare il disable se non si trova la cam-->
         <div style="display: block">
-            <img id="pic-hat" src="imgs/hat.png"><br>
-            <label for="graduation-hat">Hat</label>
-            <input id="graduation-hat" name="mask" type="radio" value="1" onchange="trigger(this)">
+            <img src="imgs/hat.png"><br>
+            <label for="pic-hat">Hat</label>
+            <input id="pic-hat" name="mask" type="radio" value="1" onchange="trigger(this)">
         </div>
         <div style="display: block">
-            <img id="pic-glasses" src="imgs/sunglasses.png"><br>
-            <label for="sunglasses">Sunglasses</label>
-            <input id="sunglasses" name="mask" type="radio" value="2" onchange="trigger(this)">
+            <img src="imgs/sunglasses.png"><br>
+            <label for="pic-glasses">Sunglasses</label>
+            <input id="pic-glasses" name="mask" type="radio" value="2" onchange="trigger(this)">
         </div>
         <div style="display: block">
-            <img id="pic-pipe" src="imgs/pipe.png"><br>
-            <label for="pipe">Pipe</label>
-            <input id="pipe" name="mask" type="radio" value="3" onchange="trigger(this)">
+            <img src="imgs/pipe.png"><br>
+            <label for="pic-pipe">Pipe</label>
+            <input id="pic-pipe" name="mask" type="radio" value="3" onchange="trigger(this)">
         </div>
     </div>
     <div id="camera-container" class="camera-container">
