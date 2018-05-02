@@ -16,13 +16,11 @@ function debug($string_to_write) {
         fwrite($tmp, $string_to_write);
     fclose($tmp);
 }
-function responseCode($http_code, $exit_code)
-{
+function responseCode($http_code, $exit_code) {
     header("HTTP/1.0 $http_code");
     exit($exit_code);
 }
-function activateUser($token)
-{
+function activateUser($token) {
     GLOBAL $DB_DNS;
     GLOBAL $DB_USER;
     GLOBAL $DB_PASSWORD;
@@ -52,15 +50,13 @@ function activateUser($token)
 }
 
 //DESTROY SESSION
-if (count($_POST) === 1 && isset($_POST['destroy']))
-{
+if (count($_POST) === 1 && isset($_POST['destroy'])) {
     session_destroy();
     responseCode(200, 0);
 }
 
 //LOGIN
-if (count($_POST) === 2 && isset($_POST['username'], $_POST['password']))
-{
+if (count($_POST) === 2 && isset($_POST['username'], $_POST['password'])) {
     global $DB_DNS;
     global $DB_USER;
     global $DB_PASSWORD;
@@ -93,8 +89,7 @@ if (count($_POST) === 2 && isset($_POST['username'], $_POST['password']))
 }
 
 //REGISTER
-if (count($_POST) === 5 && isset($_POST['username'], $_POST['email'], $_POST['password'], $_POST['name'], $_POST['surname']))
-{
+if (count($_POST) === 5 && isset($_POST['username'], $_POST['email'], $_POST['password'], $_POST['name'], $_POST['surname'])) {
     global $DB_DNS;
     global $DB_USER;
     global $DB_PASSWORD;
@@ -160,8 +155,7 @@ if (count($_POST) === 5 && isset($_POST['username'], $_POST['email'], $_POST['pa
 }
 
 //RESTORE PASSWORD
-if (count($_POST) === 1 && isset($_POST['email']))
-{
+if (count($_POST) === 1 && isset($_POST['email'])) {
     global $DB_DNS;
     global $DB_USER;
     global $DB_PASSWORD;
@@ -203,12 +197,51 @@ if (count($_POST) === 1 && isset($_POST['email']))
         responseCode(404, -1);
 }
 
-if (count($_POST) === 1 && isset($_POST['photo'], $_SESSION['user']))
-{
+//SAVE PHOTO
+if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION['user'])) {
+	$superpos_id = (int)$_POST['superpos'];
+	if (!isset($superpos_id))
+		responseCode(500, -1);
+	$superpos_id = preg_replace("/[^0-9]/", "", trim($superpos_id));
+	if (empty($superpos_id))
+		responseCode(500, -1);
+	//TODO: Controllare img type antivirus
     $data = $_POST['photo'];
-    list($type, $data) = explode(';', $data);
-    list(, $data)      = explode(',', $data);
-    $data = base64_decode($data);
-    file_put_contents("$_SERVER[DOCUMENT_ROOT]/userphoto/".getdate()[0]."_".$_SESSION['user']['iduser'].".png", $data);
+    $data = str_replace('data:image/png;base64,', '', $data);
+    $data = str_replace(' ', '+', $data);
+	$data = imagecreatefromstring(base64_decode($data));
+	$marge_right = 0;
+	$marge_top = 0;
+	$sx = 0;
+	$sy = 0;
+	switch($superpos_id)
+	{
+		case 1:
+			$superpos = imagecreatefrompng("$_SERVER[DOCUMENT_ROOT]/imgs/hat.png");
+			$superpos = imagescale($superpos, 200);
+			$sx = imagesx($superpos);
+			$sy = imagesy($superpos);
+			$marge_right = $sx / 2;
+			break;
+		case 2:
+			$superpos = imagecreatefrompng("$_SERVER[DOCUMENT_ROOT]/imgs/sunglasses.png");
+			$superpos = imagescale($superpos, 200);
+			$sx = imagesx($superpos);
+			$sy = imagesy($superpos);
+			$marge_right = $sx / 2;
+			$marge_top = 80; 
+			break;
+		case 3:
+			$superpos = imagecreatefrompng("$_SERVER[DOCUMENT_ROOT]/imgs/pipe.png");
+			$sx = imagesx($superpos);
+			$sy = imagesy($superpos);
+			$marge_right = -80;
+			$marge_top = 150;
+			break;
+		default:
+			responseCode(500, -1);
+	}
+	imagecopy($data, $superpos, (imagesx($data)/2) - $marge_right, $marge_top, 0, 0, $sx, $sy);
+    imagepng($data, "$_SERVER[DOCUMENT_ROOT]/userphoto/".getdate()[0]."_".$_SESSION['user']['iduser'].".png");
     responseCode(200, 0);
 }

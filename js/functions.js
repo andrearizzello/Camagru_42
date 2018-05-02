@@ -388,13 +388,17 @@ function takePicture() {
     canvas.width = camera.videoWidth;
     canvas.height = camera.videoHeight;
     canvas.getContext('2d').drawImage(camera, 0, 0);
-    if (hat.checked)
+    if (hat.checked || glasses.checked || pipe.checked)
     {
-        console.log(canvas.toDataURL());
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST","backend/functions.php", true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send("photo="+canvas.toDataURL());
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		if (document.getElementById("pic-hat").checked)
+			xhttp.send("photo="+canvas.toDataURL()+"&superpos=1");
+		else if (document.getElementById("pic-glasses").checked)
+			xhttp.send("photo="+canvas.toDataURL()+"&superpos=2");
+		else if (document.getElementById("pic-pipe").checked)
+			xhttp.send("photo="+canvas.toDataURL()+"&superpos=3");
         xhttp.onreadystatechange = function()
         {
             if (xhttp.readyState === 4)
