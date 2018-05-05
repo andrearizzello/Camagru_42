@@ -426,6 +426,54 @@ img.selected {
         color: black;
         margin-top: 3vw;
     }
+    button.btn-red-index {
+        background: #bf0000;
+        box-shadow: 0 7px 0 #6b0000;
+        transform: initial;
+        margin: unset;
+        width: 80%;
+        height: 50px;
+        border: unset;
+        float: unset;
+        top: unset;
+        position: relative;
+        cursor: pointer;
+        text-decoration: none;
+        animation-name: movement;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+        visibility: hidden;
+        text-align: center;
+        -webkit-transition: all .1s ease;
+        -moz-transition: all .1s ease;
+        -o-transition: all .1s ease;
+        transition: all .1s ease;
+        font-family: 'Roboto', sans-serif;
+    }
+    button.btn-blue {
+        background: #161e58;
+        box-shadow: 0 7px 0 #00062d;
+        transform: initial;
+        margin: unset;
+        width: 80%;
+        height: 50px;
+        border: unset;
+        float: unset;
+        top: unset;
+        position: relative;
+        cursor: pointer;
+        text-decoration: none;
+        animation-name: movement;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+        visibility: hidden;
+        text-align: center;
+        -webkit-transition: all .1s ease;
+        -moz-transition: all .1s ease;
+        -o-transition: all .1s ease;
+        transition: all .1s ease;
+        font-family: 'Roboto', sans-serif;
+    }
     button.btn-orange {
         background: #ff5800;
         box-shadow: 0 7px 0 #d84b00;
