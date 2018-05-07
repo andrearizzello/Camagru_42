@@ -123,6 +123,7 @@ button.btn-orange.register {
     margin-top: 1.5vw;
 }
 button.btn-orange.register:active {
+    top: unset;
     margin-top: 1.8vw;
 }
 button.btn-orange:active {
@@ -193,6 +194,9 @@ canvas.photo-canvas {
     width: 60%;
     border: 1px solid;
     border-radius: 10px;
+}
+canvas.photo-canvas:first-child {
+    margin-top: 20px;
 }
 div.camera-container {
     position: relative;
@@ -429,6 +433,15 @@ span.fix-skew::first-letter {
         border-top-right-radius: unset;
         border-bottom-right-radius: unset;
         flex: 0 0 15vw;
+    }
+    div.preview-container {
+        text-align: center;
+        border-top: 2px solid black;
+        border-left: unset;
+        border-bottom: unset;
+        border-top-left-radius: unset;
+        border-bottom-left-radius: unset;
+        flex: 0 0 20vw;
     }
     h1.title {
         font-family: 'Pacifico', cursive;
