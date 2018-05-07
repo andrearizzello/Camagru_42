@@ -23,7 +23,7 @@ if (!isset($_SESSION['user']))
 </head>
 <body>
 <header style="text-align: center">
-    <h1 style="font-family: 'Roboto', sans-serif; font-size: 300%">Your personal zone</h1>
+    <h1 style="font-family: 'Roboto', sans-serif; font-size: 300%; margin-top: 1.5vw">Your personal zone</h1>
     <button id="first" class="btn-red-index delay" style="position: absolute; float: unset" onclick="destroy_session()"><span class="fix-skew">Logout</span></button>
 </header>
 <div class="flex-container">

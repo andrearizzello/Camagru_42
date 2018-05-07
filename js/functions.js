@@ -336,13 +336,17 @@ function getCamera() {
     }
 
     function error() {
+        var radios = document.getElementsByName("mask");
+        radios.forEach(function (elem) {
+            elem.disabled = true;
+            elem.onchange = null;
+        });
         var container = document.getElementById("camera-container");
         if (container)
         {
             //TODO:Addare modalita di upload foto
         }
     }
-
     navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
 }
 function trigger(radio) {
@@ -360,7 +364,7 @@ function trigger(radio) {
         }
         else if (radio.value === "2")
         {
-            image.src = "imgs/sunglasses.png"
+            image.src = "imgs/sunglasses.png";
             image.style.top = "80px";
             image.style.width = "200px";
             image.style.left = "calc(50% - (200px/2))";
@@ -368,8 +372,8 @@ function trigger(radio) {
         else if (radio.value === "3")
         {
             image.src = "imgs/pipe.png";
-            image.style.top = "150px";
-            image.style.left = "400px";
+            image.style.top = "250px";
+            image.style.left = "calc(50% + 100px)";
         }
     }
     else
@@ -383,7 +387,6 @@ function takePicture() {
     var glasses = document.getElementById("pic-glasses");
     var pipe = document.getElementById("pic-pipe");
 
-    //TODO: Elaborare img lato server
     canvas.className = "photo-canvas";
     canvas.width = camera.videoWidth;
     canvas.height = camera.videoHeight;

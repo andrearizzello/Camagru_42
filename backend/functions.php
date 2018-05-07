@@ -235,8 +235,8 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
 			$superpos = imagecreatefrompng("$_SERVER[DOCUMENT_ROOT]/imgs/pipe.png");
 			$sx = imagesx($superpos);
 			$sy = imagesy($superpos);
-			$marge_right = -80;
-			$marge_top = 150;
+			$marge_right = -100;
+			$marge_top = 250;
 			break;
 		default:
 			responseCode(500, -1);
