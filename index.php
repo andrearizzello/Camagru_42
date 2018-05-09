@@ -12,6 +12,21 @@ session_start();
     <link rel="stylesheet" href="css/reset.css">
     <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon.png">
     <script src="js/functions.js"></script>
+    <script>
+        window.onload = function () {
+            var container = document.getElementById("im-container");
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST","backend/functions.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("getphoto=1");
+            xhttp.onreadystatechange = function()
+            {
+                if (xhttp.readyState === 4)
+                    if(xhttp.status === 200)
+                        container.innerHTML = xhttp.responseText;
+            };
+        }
+    </script>
 </head>
 <body class="background">
 <header>
@@ -26,7 +41,7 @@ session_start();
         <?php endif;?>
     </div>
 </header>
-<div class="img-container">
+<div id="im-container" class="img-container">
 </div>
 </body>
 <footer>

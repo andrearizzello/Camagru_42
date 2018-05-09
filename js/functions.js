@@ -406,7 +406,7 @@ function takePicture() {
         {
             if (xhttp.readyState === 4)
                 if(xhttp.status === 200)
-                    container.appendChild(canvas);
+                    container.innerHTML = xhttp.responseText;
         };
     }
 }

@@ -383,6 +383,11 @@ img.selected {
     top: 0;
     left: calc(50% - (128px/2));
 }
+img.homepage {
+    width: 20%;
+    margin-left: 10px;
+    margin-top: 10px;
+}
 p.center-message {
     font-family: 'Roboto', sans-serif;
     font-size: 30px;
@@ -620,8 +625,10 @@ span.fix-skew::first-letter {
     #second:active {
         margin-top: 27px;
     }
-    div.img-container {
-        display: none;
+    img.homepage {
+        width: 100%;
+        margin-left: unset;
+        margin-top: 10px;
     }
     div.register-centered-div input {
         padding: 4px 0 4px 4px;

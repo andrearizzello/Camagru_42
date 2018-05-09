@@ -49,6 +49,17 @@ function activateUser($token) {
     else
         return (-1);
 }
+function printImagesUser()
+{
+    $dir    = "$_SERVER[DOCUMENT_ROOT]/userphoto";
+    $files1 = scandir($dir);
+    foreach (array_slice($files1, 2) as $img)
+    {
+        $tmp = explode("_", $img);
+        if ((int)$tmp[1] === (int)$_SESSION['user']['iduser'])
+            echo "<img src='/userphoto/$img' style='width: 60%'>";
+    }
+}
 
 //DESTROY SESSION
 if (count($_POST) === 1 && isset($_POST['destroy'])) {
@@ -247,5 +258,13 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
 	}
 	imagecopy($data, $superpos, (imagesx($data)/2) - $marge_right, $marge_top, 0, 0, $sx, $sy);
     imagepng($data, "$_SERVER[DOCUMENT_ROOT]/userphoto/".getdate()[0]."_".$_SESSION['user']['iduser'].".png");
-    responseCode(200, 0);
+    printImagesUser();
+}
+
+if (count($_POST) === 1 && isset($_POST['getphoto']))
+{
+    $dir    = "$_SERVER[DOCUMENT_ROOT]/userphoto";
+    $files1 = scandir($dir);
+    foreach (array_slice($files1, 2) as $img)
+        echo "<img src='/userphoto/$img' class='homepage'>";
 }
