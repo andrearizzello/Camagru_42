@@ -30,6 +30,7 @@ function activateUser($token) {
         $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     } catch (PDOException $e) {
+        responseCode(408, -1);
         die('Connection failed: ' . $e->getMessage());
     }
     $query = "SELECT iduser, activated FROM `users` WHERE `hash` = ?";
@@ -67,6 +68,7 @@ if (count($_POST) === 2 && isset($_POST['username'], $_POST['password'])) {
         $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     } catch (PDOException $e) {
+        responseCode(408, -1);
         die('Connection failed: ' . $e->getMessage());
     }
     if (empty($username) || empty($password))
@@ -102,6 +104,7 @@ if (count($_POST) === 5 && isset($_POST['username'], $_POST['email'], $_POST['pa
         $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     } catch (PDOException $e) {
+        responseCode(408, -1);
         die('Connection failed: ' . $e->getMessage());
     }
     if (empty($username) || empty($password) || empty($name) || empty($surname))
@@ -164,6 +167,7 @@ if (count($_POST) === 1 && isset($_POST['email'])) {
         $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     } catch (PDOException $e) {
+        responseCode(408, -1);
         die('Connection failed: ' . $e->getMessage());
     }
     $query = "SELECT `iduser`, `name`, `password`, `email` FROM users WHERE `email` = ?";

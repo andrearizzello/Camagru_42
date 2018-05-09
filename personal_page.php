@@ -18,7 +18,25 @@ if (!isset($_SESSION['user']))
     <script>
         window.onload = function () {
             getCamera();
+            var c = document.getElementById("camera-container");
+            var x = document.getElementById("prev-cont");
+            if (window.innerWidth <= 600)
+            {
+                c.style.transform = "scale("+window.innerWidth/660+")";
+                x.style.top = ((c.getBoundingClientRect().height + 20) - 480) + "px";
+            }
         };
+        window.onresize = function () {
+            var c = document.getElementById("camera-container");
+            var x = document.getElementById("prev-cont");
+            if (window.innerWidth <= 600)
+            {
+                c.style.transform = "scale("+window.innerWidth/660+")";
+                x.style.top = ((c.getBoundingClientRect().height + 20) - 480) + "px";
+            }
+            else
+                c.style.transform = "scale(1)";
+        }
     </script>
 </head>
 <body>
@@ -28,7 +46,6 @@ if (!isset($_SESSION['user']))
 </header>
 <div class="flex-container">
     <div class="superpos-container">
-<!--        TODO: Addare il disable se non si trova la cam-->
         <div style="display: block">
             <img src="imgs/hat.png"><br>
             <label for="pic-hat">Hat</label>

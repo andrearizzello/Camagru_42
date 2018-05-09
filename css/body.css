@@ -433,6 +433,7 @@ span.fix-skew::first-letter {
         border-top-right-radius: unset;
         border-bottom-right-radius: unset;
         flex: 0 0 15vw;
+        width: 100%;
     }
     div.preview-container {
         text-align: center;
@@ -442,6 +443,8 @@ span.fix-skew::first-letter {
         border-top-left-radius: unset;
         border-bottom-left-radius: unset;
         flex: 0 0 20vw;
+        position: relative;
+        width: 100%;
     }
     h1.title {
         font-family: 'Pacifico', cursive;
@@ -632,8 +635,8 @@ span.fix-skew::first-letter {
         text-align: center;
         height: 480px;
         width: 640px;
-        transform: scale(0.8);
-        transform-origin: left;
+        margin-top: 15px;
+        transform-origin: left top;
     }
     hr.password_strength {
         padding: unset;
