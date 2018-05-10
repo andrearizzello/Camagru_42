@@ -209,12 +209,16 @@ function putLike(likebtn) {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","backend/functions.php", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("putlike="+likebtn.parentNode.childNodes[3].getAttribute('id'));
+    xhttp.send("putlike="+likebtn.parentNode.getAttribute('id'));
     xhttp.onreadystatechange = function()
     {
         if (xhttp.readyState === 4)
             if(xhttp.status === 200)
-                document.getElementById(xhttp.responseText.substr(0, xhttp.responseText.indexOf(" "))).innerHTML = xhttp.responseText.substr(xhttp.responseText.indexOf(" ") + 1, xhttp.responseText.length);
+            {
+                var x = document.getElementById(xhttp.responseText.substr(0, xhttp.responseText.indexOf(" ")));
+                debugger;
+                x.childNodes[3].innerHTML = xhttp.responseText.substr(xhttp.responseText.indexOf(" ") + 1, xhttp.responseText.length);
+            }
     };
 }
 function recoverPassword() {
@@ -439,5 +443,18 @@ function trigger(radio) {
         cameraButton.style.display = "none";
 }
 function openComment(commentbtn) {
-
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST","backend/functions.php", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("putcomment="+commentbtn.parentNode.getAttribute('id')); //TODO: FINIRE!!!!
+    xhttp.onreadystatechange = function()
+    {
+        if (xhttp.readyState === 4)
+            if(xhttp.status === 200)
+            {
+                var x = document.getElementById(xhttp.responseText.substr(0, xhttp.responseText.indexOf(" ")));
+                debugger;
+                x.childNodes[7].innerHTML = xhttp.responseText.substr(xhttp.responseText.indexOf(" ") + 1, xhttp.responseText.length);
+            }
+    };
 }

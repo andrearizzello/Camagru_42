@@ -228,7 +228,6 @@ if (count($_POST) === 1 && isset($_POST['email'])) {
     $result = $db->fetch(PDO::FETCH_ASSOC);
     if ($result)
     {
-        debug($result);
         $password = substr($result['password'], 0, 10);
         $hashedPW = hash("whirlpool", $password);
         $iduser = $result['iduser'];
@@ -340,11 +339,11 @@ if (count($_POST) === 1 && isset($_POST['getphoto']))
         foreach ($img_array as $img) : ?>
         <div class="homepage">
             <img src="/userphoto/<?=$img?>">
-            <div> <!-- TODO: Provare a mettere l'id al div invece che ai buttons-->
+            <div id="<?=str_replace(".png", "", $img)?>">
                 <img src="/imgs/like.svg" style="width: 30px" onclick="putLike(this)">
-                <p id="<?=str_replace(".png", "", $img)?>" style="display: inline; margin-right: 10%"><?=getLikes(str_replace(".png", "", $img))?></p>
+                <p style="display: inline; margin-right: 10%"><?=getLikes(str_replace(".png", "", $img))?></p>
                 <img src="/imgs/comment.svg" style="width: 30px; margin-left: 10%" onclick="openComment(this)">
-                <p id="<?=str_replace(".png", "", $img)?>_1" style="display: inline"><?=getComments(str_replace(".png", "", $img))?></p>
+                <p style="display: inline"><?=getComments(str_replace(".png", "", $img))?></p>
             </div>
         </div>
         <?php endforeach;
