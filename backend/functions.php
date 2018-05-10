@@ -60,6 +60,44 @@ function printImagesUser()
             echo "<img src='/userphoto/$img' style='width: 60%'>";
     }
 }
+function getLikes($idphoto) {
+    global $DB_DNS;
+    global $DB_USER;
+    global $DB_PASSWORD;
+    try {
+        $pdobj = new PDO($DB_DNS, $DB_USER, $DB_PASSWORD);
+        $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    } catch (PDOException $e) {
+        responseCode(408, -1);
+        die('Connection failed: ' . $e->getMessage());
+    }
+    $query = "SELECT COUNT(*) as result FROM likes WHERE id_photo = ?";
+    $db = $pdobj->prepare($query);
+    $db->bindParam(1, $idphoto, PDO::PARAM_STR);
+    $db->execute();
+    $result = $db->fetch(PDO::FETCH_ASSOC);
+    return ($result['result']);
+}
+function getComments($idphoto) {
+    global $DB_DNS;
+    global $DB_USER;
+    global $DB_PASSWORD;
+    try {
+        $pdobj = new PDO($DB_DNS, $DB_USER, $DB_PASSWORD);
+        $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    } catch (PDOException $e) {
+        responseCode(408, -1);
+        die('Connection failed: ' . $e->getMessage());
+    }
+    $query = "SELECT COUNT(*) as result FROM comments WHERE id_photo = ?";
+    $db = $pdobj->prepare($query);
+    $db->bindParam(1, $idphoto, PDO::PARAM_STR);
+    $db->execute();
+    $result = $db->fetch(PDO::FETCH_ASSOC);
+    return ($result['result']);
+}
 
 //DESTROY SESSION
 if (count($_POST) === 1 && isset($_POST['destroy'])) {
@@ -256,15 +294,114 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
 		default:
 			responseCode(500, -1);
 	}
+	$name = getdate()[0]."_".$_SESSION['user']['iduser'];
 	imagecopy($data, $superpos, (imagesx($data)/2) - $marge_right, $marge_top, 0, 0, $sx, $sy);
-    imagepng($data, "$_SERVER[DOCUMENT_ROOT]/userphoto/".getdate()[0]."_".$_SESSION['user']['iduser'].".png");
-    printImagesUser();
+    imagepng($data, "$_SERVER[DOCUMENT_ROOT]/userphoto/$name.png");
+    global $DB_DNS;
+    global $DB_USER;
+    global $DB_PASSWORD;
+    try {
+        $pdobj = new PDO($DB_DNS, $DB_USER, $DB_PASSWORD);
+        $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    } catch (PDOException $e) {
+        responseCode(408, -1);
+        die('Connection failed: ' . $e->getMessage());
+    }
+    try {
+        $query = "INSERT INTO `photos` (idphoto, iduser) VALUES (?, ?)";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1, $name, PDO::PARAM_STR);
+        $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+        if ($db->execute())
+            printImagesUser();
+        else
+            die("RIP");
+    }
+    catch (PDOException $exception)
+    {
+        die($exception->getMessage());
+    }
 }
 
+//GET ALL PHOTO FROM THE STARTING POINT $_POST['getphoto']
 if (count($_POST) === 1 && isset($_POST['getphoto']))
 {
-    $dir    = "$_SERVER[DOCUMENT_ROOT]/userphoto";
-    $files1 = scandir($dir);
-    foreach (array_slice($files1, 2) as $img)
-        echo "<img src='/userphoto/$img' class='homepage'>";
+    $start = (int)$_POST['getphoto'];
+    if ($start < 0)
+        exit(1);
+    if ($start !== 0)
+        $start = ($start * 10) - 10;
+    $dir = "$_SERVER[DOCUMENT_ROOT]/userphoto";
+    $img_array = array_diff(scandir($dir), array('.', '..'));
+    $img_array = array_slice($img_array, $start, 10);
+    if (isset($_SESSION['user']['iduser']))
+    {
+        foreach ($img_array as $img) : ?>
+        <div class="homepage">
+            <img src="/userphoto/<?=$img?>">
+            <div> <!-- TODO: Provare a mettere l'id al div invece che ai buttons-->
+                <img src="/imgs/like.svg" style="width: 30px" onclick="putLike(this)">
+                <p id="<?=str_replace(".png", "", $img)?>" style="display: inline; margin-right: 10%"><?=getLikes(str_replace(".png", "", $img))?></p>
+                <img src="/imgs/comment.svg" style="width: 30px; margin-left: 10%" onclick="openComment(this)">
+                <p id="<?=str_replace(".png", "", $img)?>_1" style="display: inline"><?=getComments(str_replace(".png", "", $img))?></p>
+            </div>
+        </div>
+        <?php endforeach;
+    }
+    else
+    {
+        foreach ($img_array as $img) : ?>
+        <div class="homepage" style="box-shadow: unset">
+            <img src="/userphoto/<?=$img?>" class="nolog">
+        </div>
+        <?php endforeach;
+    }
+}
+
+//GET NUMBER OF PHOTOS
+if (count($_POST) === 1 && isset($_POST['sizearray']))
+{
+    $dir = "$_SERVER[DOCUMENT_ROOT]/userphoto";
+    $img_array = array_diff(scandir($dir), array('.', '..'));
+    echo count($img_array);
+}
+
+//PUT LIKE
+if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['putlike']))
+{
+    global $DB_DNS;
+    global $DB_USER;
+    global $DB_PASSWORD;
+    try {
+        $pdobj = new PDO($DB_DNS, $DB_USER, $DB_PASSWORD);
+        $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    } catch (PDOException $e) {
+        responseCode(408, -1);
+        die('Connection failed: ' . $e->getMessage());
+    }
+    $query = "SELECT * FROM `likes` WHERE id_user = ? AND id_photo = ?";
+    $db = $pdobj->prepare($query);
+    $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+    $db->bindParam(2, $_POST['putlike'], PDO::PARAM_STR); //TODO: Check security
+    $db->execute();
+    $result = $db->fetch(PDO::FETCH_ASSOC);
+    if (!$result)
+    {
+        $query = "INSERT INTO likes (id_user, id_photo) VALUES (?, ?)";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+        $db->bindParam(2, $_POST['putlike'], PDO::PARAM_STR); //TODO: Check security
+        $db->execute();
+    }
+    else
+    {
+        $query = "DELETE FROM likes where id_user = ? AND id_photo = ?";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+        $db->bindParam(2, $_POST['putlike'], PDO::PARAM_STR); //TODO: Check security
+        $db->execute();
+    }
+    echo $_POST['putlike']." ".getLikes($_POST['putlike']); //TODO: Check security
 }

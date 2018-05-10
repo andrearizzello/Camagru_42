@@ -11,22 +11,55 @@ session_start();
     <link rel="stylesheet" href="css/body.css">
     <link rel="stylesheet" href="css/reset.css">
     <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon.png">
-    <script src="js/functions.js"></script>
     <script>
         window.onload = function () {
             var container = document.getElementById("im-container");
             var xhttp = new XMLHttpRequest();
             xhttp.open("POST","backend/functions.php", true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhttp.send("getphoto=1");
+            xhttp.send("getphoto=0");
             xhttp.onreadystatechange = function()
             {
                 if (xhttp.readyState === 4)
                     if(xhttp.status === 200)
                         container.innerHTML = xhttp.responseText;
             };
+            var totalpage = 0;
+            var xhttpp = new XMLHttpRequest();
+            xhttpp.open("POST","backend/functions.php", true);
+            xhttpp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttpp.send("sizearray=1");
+            xhttpp.onreadystatechange = function()
+            {
+                if (xhttpp.readyState === 4)
+                    if(xhttpp.status === 200) {
+                        var start = 2;
+                        var pcontainer = document.getElementById("page-selector-container");
+                        var btn = document.createElement("button");
+                        totalpage = parseInt(xhttpp.responseText);
+                        totalpage -= 10;
+                        btn.value = "1";
+                        btn.innerHTML = "1";
+                        btn.onclick = function () {
+                            takePhotoFrom(0);
+                        };
+                        pcontainer.appendChild(btn);
+                        while (totalpage > 0) {
+                            btn = document.createElement("button");
+                            btn.value = start.toString();
+                            btn.innerHTML = start.toString();
+                            btn.onclick = function () {
+                                takePhotoFrom(this.value);
+                            };
+                            pcontainer.appendChild(btn);
+                            totalpage -= 10;
+                            start++;
+                        }
+                    }
+            };
         }
     </script>
+    <script src="js/functions.js"></script>
 </head>
 <body class="background">
 <header>
@@ -41,10 +74,16 @@ session_start();
         <?php endif;?>
     </div>
 </header>
-<div id="im-container" class="img-container">
-</div>
+<div id="im-container" class="img-container"></div>
+<div id="page-selector-container" style="text-align: center; margin-bottom: 4vh;"></div>
 </body>
 <footer>
     <p>Andrea Rizzello (@arizzell) 2018</p>
 </footer>
+<div id="redir_screen" style="display: none">
+    <div class="notification-container-login">
+        <div id="comments-container" style="display: table-cell; vertical-align: middle; text-align: center">
+        </div>
+    </div>
+</div>
 </html>

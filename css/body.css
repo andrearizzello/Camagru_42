@@ -219,10 +219,12 @@ div.img-container {
     margin-left: 10%;
     position: relative;
     width: 80%;
-    height: 80vh;
-    border-radius: 20px;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,.16), 0 0 2px 0 rgba(0,0,0,.12);
-    margin-bottom: 3vh;
+    margin-bottom: 4vh;
+    display: flex;
+    align-content: flex-start;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 div.login-completed {
     position: fixed;
@@ -383,10 +385,22 @@ img.selected {
     top: 0;
     left: calc(50% - (128px/2));
 }
-img.homepage {
+img.nolog {
+    border-top-left-radius: unset !important;
+    border-top-right-radius: unset !important;
+}
+div.homepage {
+    border-radius: 20px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.16), 0 0 2px 0 rgba(0,0,0,.12);
     width: 20%;
-    margin-left: 10px;
-    margin-top: 10px;
+    text-align: center;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+div.homepage img:first-child:not([style]) {
+    width: 100%;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
 }
 p.center-message {
     font-family: 'Roboto', sans-serif;
@@ -625,10 +639,18 @@ span.fix-skew::first-letter {
     #second:active {
         margin-top: 27px;
     }
-    img.homepage {
+    div.homepage {
         width: 100%;
-        margin-left: unset;
-        margin-top: 10px;
+        box-shadow: unset;
+        margin-right: unset;
+        margin-bottom: 15px;
+    }
+    div.homepage:first-child {
+        margin-top: 30px;
+    }
+    div.homepage img:first-child:not([style]) {
+        width: 100%;
+        border-radius: 20px;
     }
     div.register-centered-div input {
         padding: 4px 0 4px 4px;
