@@ -11,6 +11,7 @@ session_start();
     <link rel="stylesheet" href="css/body.css">
     <link rel="stylesheet" href="css/reset.css">
     <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon.png">
+    <script src="js/functions.js"></script>
     <script>
         window.onload = function () {
             var container = document.getElementById("im-container");
@@ -59,7 +60,6 @@ session_start();
             };
         }
     </script>
-    <script src="js/functions.js"></script>
 </head>
 <body class="background">
 <header>
@@ -80,10 +80,10 @@ session_start();
 <footer>
     <p>Andrea Rizzello (@arizzell) 2018</p>
 </footer>
-<div id="redir_screen" style="display: none">
-    <div class="notification-container-login">
-        <div id="comments-container" style="display: table-cell; vertical-align: middle; text-align: center">
-        </div>
+<div id="comment-pre-container">
+    <img src="imgs/close.svg" class="close-comments" onclick="closeWindow()">
+    <div id="comment-container">
     </div>
+    <div id="textarenbtn" class="textareanbtn-container"></div>
 </div>
 </html>

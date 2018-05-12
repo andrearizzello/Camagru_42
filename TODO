@@ -11,3 +11,18 @@ http://php.net/manual/en/image.examples-watermark.php
 https://www.html5rocks.com/en/tutorials/getusermedia/intro/
 
 https://css-tricks.com/scaled-proportional-blocks-with-css-and-javascript/
+
+
+IMPLEMENTARE COMMENTI
+IMPLEMENTARE RICEZIONE MAIL AL COMMENTO RICEVUTO
+IMPLEMENTARE RIMOZIONE FOTO AL CLICK NELLA PAGINA PERSONALE
+IMPLEMENTARE MODIFICA DEI DATI NELLA PAGINA PERSONALE (USER PREFERENCES)
+
+FIXARE
+@media screen and (max-width: 600px)
+div.homepage img:first-child:not([style]) {
+    width: 100%;
+    border-radius: 20px; << --- QUESTO deve sparire
+}
+
+CHECK SICUREZZA GENERALE

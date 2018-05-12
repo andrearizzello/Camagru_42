@@ -2,7 +2,6 @@
 session_start();
 if (!isset($_SESSION['user']))
     header("Location: index.php");
-//print_r($_SESSION['user'])
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,6 +24,16 @@ if (!isset($_SESSION['user']))
                 c.style.transform = "scale("+window.innerWidth/660+")";
                 x.style.top = ((c.getBoundingClientRect().height + 20) - 480) + "px";
             }
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST","backend/functions.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("getphotos=1");
+            xhttp.onreadystatechange = function()
+            {
+                if (xhttp.readyState === 4)
+                    if(xhttp.status === 200)
+                        x.innerHTML = xhttp.responseText;
+            };
         };
         window.onresize = function () {
             var c = document.getElementById("camera-container");

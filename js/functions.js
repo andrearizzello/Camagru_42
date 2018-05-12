@@ -1,3 +1,6 @@
+function closeWindow() {
+    document.getElementById("comment-pre-container").style.display = "none";
+}
 function badValue(username, email, password, name, surname, toast_ok, toast_error) {
     if (!username || !username.value.length)
     {
@@ -101,22 +104,22 @@ function destroy_session() {
     };
 }
 function getCamera() {
+    var radios = document.getElementsByName("mask");
+    const video = document.getElementById("camera");
     const constraints = {
         video: true
     };
 
-    const video = document.getElementById("camera");
-
+    radios.forEach(function (elem) {
+        elem.disabled = true;
+    });
     function success(stream) {
         video.srcObject = stream;
-    }
-
-    function error() {
-        var radios = document.getElementsByName("mask");
         radios.forEach(function (elem) {
-            elem.disabled = true;
-            elem.onchange = null;
+            elem.disabled = false;
         });
+    }
+    function error() {
         var container = document.getElementById("camera-container");
         if (container)
         {
@@ -216,7 +219,6 @@ function putLike(likebtn) {
             if(xhttp.status === 200)
             {
                 var x = document.getElementById(xhttp.responseText.substr(0, xhttp.responseText.indexOf(" ")));
-                debugger;
                 x.childNodes[3].innerHTML = xhttp.responseText.substr(xhttp.responseText.indexOf(" ") + 1, xhttp.responseText.length);
             }
     };
@@ -443,18 +445,50 @@ function trigger(radio) {
         cameraButton.style.display = "none";
 }
 function openComment(commentbtn) {
+    var commentsPreContainer = document.getElementById("comment-pre-container");
+    var commentsContainer = document.getElementById("comment-container");
+    var textnbtn = document.getElementById("textarenbtn");
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","backend/functions.php", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("putcomment="+commentbtn.parentNode.getAttribute('id')); //TODO: FINIRE!!!!
+    xhttp.send("getcomments="+commentbtn.parentNode.getAttribute('id'));
     xhttp.onreadystatechange = function()
     {
         if (xhttp.readyState === 4)
             if(xhttp.status === 200)
             {
-                var x = document.getElementById(xhttp.responseText.substr(0, xhttp.responseText.indexOf(" ")));
-                debugger;
-                x.childNodes[7].innerHTML = xhttp.responseText.substr(xhttp.responseText.indexOf(" ") + 1, xhttp.responseText.length);
+                commentsPreContainer.style.display = "initial";
+                commentsContainer.innerHTML = xhttp.responseText;
+                var textarea = document.createElement("textarea");
+                var submitbtn = document.createElement("button");
+                textarea.setAttribute("id", "textarea");
+                textarea.setAttribute("rows", "5");
+                textarea.setAttribute("style", "resize: none; width: 100%; border: unset; border-top: 1px solid; box-sizing: border-box; outline: unset;");
+                submitbtn.innerHTML = "Comment";
+                submitbtn.setAttribute("id", commentbtn.parentNode.getAttribute('id'));
+                submitbtn.setAttribute("style", "background-color: white; border: 2px solid black;");
+                submitbtn.onclick = function (){pushComment(this)};
+                textnbtn.innerHTML = "";
+                textnbtn.appendChild(textarea);
+                textnbtn.appendChild(submitbtn);
             }
     };
+}
+function pushComment(btn) {
+    var xhttp = new XMLHttpRequest();
+    var comment = document.getElementById("textarea");
+    var commentsContainer = document.getElementById("comment-container");
+    comment.value = comment.value.trim();
+    if (comment.value.length !== 0) {
+        xhttp.open("POST", "backend/functions.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("idphoto=" + btn.getAttribute('id') + "&text=" +comment.value);
+        comment.value = "";
+        xhttp.onreadystatechange = function () {
+            if (xhttp.readyState === 4)
+                if (xhttp.status === 200) {
+                    commentsContainer.innerHTML = xhttp.responseText;
+                }
+        }
+    }
 }
