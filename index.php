@@ -44,7 +44,8 @@ session_start();
                         btn.onclick = function () {
                             takePhotoFrom(0);
                         };
-                        pcontainer.appendChild(btn);
+                        if (xhttpp.responseText !== "0")
+                            pcontainer.appendChild(btn);
                         while (totalpage > 0) {
                             btn = document.createElement("button");
                             btn.value = start.toString();
