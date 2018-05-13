@@ -72,9 +72,11 @@ if (!isset($_SESSION['user']))
         </div>
     </div>
     <div id="camera-container" class="camera-container">
+        <img id="camera-img" width="640" height="480" style="display: none">
         <video id="camera" autoplay></video>
         <img id="camera-icon" src="imgs/photo-camera.svg" onclick="takePicture()">
         <img id="superpos" src="" class="selected">
+        <input id="file-picker" type="file" accept="image/x-png, image/jpeg" style="display: none; position: absolute">
     </div>
     <div id="prev-cont" class="preview-container">
     </div>

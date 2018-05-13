@@ -1,6 +1,3 @@
-function closeWindow() {
-    document.getElementById("comment-pre-container").style.display = "none";
-}
 function badValue(username, email, password, name, surname, toast_ok, toast_error) {
     if (!username || !username.value.length)
     {
@@ -91,6 +88,9 @@ function badValueUP(username, password, toast_error) {
     }
     return (0);
 }
+function closeWindow() {
+    document.getElementById("comment-pre-container").style.display = "none";
+}
 function destroy_session() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","backend/functions.php", true);
@@ -104,32 +104,37 @@ function destroy_session() {
     };
 }
 function getCamera() {
-    var radios = document.getElementsByName("mask");
     const video = document.getElementById("camera");
     const constraints = {
         video: true
     };
-
-    radios.forEach(function (elem) {
-        elem.disabled = true;
-    });
     function success(stream) {
         video.srcObject = stream;
-        radios.forEach(function (elem) {
-            elem.disabled = false;
-        });
     }
     function error() {
+        document.getElementById("camera-icon").onclick = takePicturefromPic;
         var container = document.getElementById("camera-container");
+        var filepicker = document.getElementById("file-picker");
+        var cameraImg = document.getElementById("camera-img");
         if (container)
         {
-            //TODO:Addare modalita di upload foto
+            document.getElementById("camera").remove();
+            filepicker.setAttribute("style", "display: initial; position: absolute");
+            cameraImg.setAttribute("style", "display: initial; border: 1px solid");
+            filepicker.onchange = function () {
+                if (this.files[0].type === "image/png" || this.files[0].type === "image/jpeg")
+                {
+                    var reader = new FileReader();
+                    reader.readAsDataURL(this.files[0]);
+                    reader.onload = done;
+                }
+            }
+        }
+        function done(img) {
+            document.getElementById("camera-img").setAttribute('src', img.target.result);
         }
     }
     navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
-}
-function insertAfter(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 function login() {
     var username = document.getElementById("username");
@@ -195,6 +200,38 @@ function login() {
         };
     }
 }
+function openComment(commentbtn) {
+    var commentsPreContainer = document.getElementById("comment-pre-container");
+    var commentsContainer = document.getElementById("comment-container");
+    var textnbtn = document.getElementById("textarenbtn");
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST","backend/functions.php", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("getcomments="+commentbtn.parentNode.getAttribute('id'));
+    xhttp.onreadystatechange = function()
+    {
+        if (xhttp.readyState === 4)
+            if(xhttp.status === 200)
+            {
+                commentsPreContainer.style.display = "initial";
+                commentsContainer.innerHTML = xhttp.responseText;
+                var textarea = document.createElement("textarea");
+                var submitbtn = document.createElement("button");
+                textarea.setAttribute("id", "textarea");
+                textarea.setAttribute("maxlength", "500");
+                textarea.setAttribute("autofocus", "true");
+                textarea.setAttribute("rows", "5");
+                textarea.setAttribute("style", "resize: none; width: 100%; border: unset; border-top: 1px solid; box-sizing: border-box; outline: unset;");
+                submitbtn.innerHTML = "Comment";
+                submitbtn.setAttribute("id", commentbtn.parentNode.getAttribute('id'));
+                submitbtn.setAttribute("style", "background-color: white; border: 2px solid black;");
+                submitbtn.onclick = function (){pushComment(this)};
+                textnbtn.innerHTML = "";
+                textnbtn.appendChild(textarea);
+                textnbtn.appendChild(submitbtn);
+            }
+    };
+}
 function passwordComplexity() {
     var indicator = document.getElementById("pwd_indicator");
     var password = document.getElementById("password");
@@ -207,6 +244,24 @@ function passwordComplexity() {
     if (password && password.value.length >= 10)
         if (indicator)
             indicator.style.background = "green";
+}
+function pushComment(btn) {
+    var xhttp = new XMLHttpRequest();
+    var comment = document.getElementById("textarea");
+    var commentsContainer = document.getElementById("comment-container");
+    comment.value = comment.value.trim();
+    if (comment.value.length !== 0) {
+        xhttp.open("POST", "backend/functions.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("idphoto=" + btn.getAttribute('id') + "&text=" +comment.value);
+        comment.value = "";
+        xhttp.onreadystatechange = function () {
+            if (xhttp.readyState === 4)
+                if (xhttp.status === 200) {
+                    commentsContainer.innerHTML = xhttp.responseText;
+                }
+        }
+    }
 }
 function putLike(likebtn) {
     var xhttp = new XMLHttpRequest();
@@ -401,11 +456,33 @@ function takePicture() {
         xhttp.open("POST","backend/functions.php", true);
 		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		if (document.getElementById("pic-hat").checked)
-			xhttp.send("photo="+canvas.toDataURL()+"&superpos=1");
+			xhttp.send("photo="+canvas.toDataURL("image/png", 1)+"&superpos=1");
 		else if (document.getElementById("pic-glasses").checked)
-			xhttp.send("photo="+canvas.toDataURL()+"&superpos=2");
+			xhttp.send("photo="+canvas.toDataURL("image/png", 1)+"&superpos=2");
 		else if (document.getElementById("pic-pipe").checked)
-			xhttp.send("photo="+canvas.toDataURL()+"&superpos=3");
+			xhttp.send("photo="+canvas.toDataURL("image/png", 1)+"&superpos=3");
+        xhttp.onreadystatechange = function()
+        {
+            if (xhttp.readyState === 4)
+                if(xhttp.status === 200)
+                    container.innerHTML = xhttp.responseText;
+        };
+    }
+}
+function takePicturefromPic() {
+    if (document.getElementById("file-picker").files[0])
+    {
+        var camera = document.getElementById("camera-img");
+        var container = document.getElementById("prev-cont");
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST","backend/functions.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        if (document.getElementById("pic-hat").checked)
+            xhttp.send("photo="+camera.getAttribute("src")+"&superpos=1");
+        else if (document.getElementById("pic-glasses").checked)
+            xhttp.send("photo="+camera.getAttribute("src")+"&superpos=2");
+        else if (document.getElementById("pic-pipe").checked)
+            xhttp.send("photo="+camera.getAttribute("src")+"&superpos=3");
         xhttp.onreadystatechange = function()
         {
             if (xhttp.readyState === 4)
@@ -444,53 +521,17 @@ function trigger(radio) {
     else
         cameraButton.style.display = "none";
 }
-function openComment(commentbtn) {
-    var commentsPreContainer = document.getElementById("comment-pre-container");
-    var commentsContainer = document.getElementById("comment-container");
-    var textnbtn = document.getElementById("textarenbtn");
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST","backend/functions.php", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("getcomments="+commentbtn.parentNode.getAttribute('id'));
-    xhttp.onreadystatechange = function()
-    {
-        if (xhttp.readyState === 4)
-            if(xhttp.status === 200)
-            {
-                commentsPreContainer.style.display = "initial";
-                commentsContainer.innerHTML = xhttp.responseText;
-                var textarea = document.createElement("textarea");
-                var submitbtn = document.createElement("button");
-                textarea.setAttribute("id", "textarea");
-                textarea.setAttribute("maxlength", "500");
-                textarea.setAttribute("autofocus", "true");
-                textarea.setAttribute("rows", "5");
-                textarea.setAttribute("style", "resize: none; width: 100%; border: unset; border-top: 1px solid; box-sizing: border-box; outline: unset;");
-                submitbtn.innerHTML = "Comment";
-                submitbtn.setAttribute("id", commentbtn.parentNode.getAttribute('id'));
-                submitbtn.setAttribute("style", "background-color: white; border: 2px solid black;");
-                submitbtn.onclick = function (){pushComment(this)};
-                textnbtn.innerHTML = "";
-                textnbtn.appendChild(textarea);
-                textnbtn.appendChild(submitbtn);
-            }
-    };
-}
-function pushComment(btn) {
-    var xhttp = new XMLHttpRequest();
-    var comment = document.getElementById("textarea");
-    var commentsContainer = document.getElementById("comment-container");
-    comment.value = comment.value.trim();
-    if (comment.value.length !== 0) {
+function removePhoto(idphoto) {
+    if (confirm("You are going to remove this photo.\nAre you sure about that?")) {
+        var id = idphoto.getAttribute("src").replace("/userphoto/", "").replace(".png", "");
+        var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "backend/functions.php", true);
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send("idphoto=" + btn.getAttribute('id') + "&text=" +comment.value);
-        comment.value = "";
+        xhttp.send("rmphoto=" + id);
         xhttp.onreadystatechange = function () {
             if (xhttp.readyState === 4)
-                if (xhttp.status === 200) {
-                    commentsContainer.innerHTML = xhttp.responseText;
-                }
+                if (xhttp.status === 200)
+                    idphoto.remove();
         }
     }
 }

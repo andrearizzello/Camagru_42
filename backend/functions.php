@@ -70,7 +70,7 @@ function printImagesUser()
         {
             $result = $db->fetchAll();
             foreach ($result as $img)
-                echo "<img src='/userphoto/{$img['idphoto']}.png' style='width: 80%'>";
+                echo "<img src='/userphoto/{$img['idphoto']}.png' style='width: 80%' onclick='removePhoto(this)'>";
         }
         else
             die("RIP");
@@ -117,6 +117,13 @@ function getComments($idphoto) {
     $db->execute();
     $result = $db->fetch(PDO::FETCH_ASSOC);
     return ($result['result']);
+}
+function resize_image($data) {
+    list($width, $height) = getimagesizefromstring(base64_decode($data));
+    $src = imagecreatefromstring(base64_decode($data));
+    $final = imagecreatetruecolor(640, 480);
+    imagecopyresampled($final, $src, 0, 0, 0, 0, 640, 480, $width, $height);
+    return $final;
 }
 
 //DESTROY SESSION
@@ -277,11 +284,11 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
 	$superpos_id = preg_replace("/[^0-9]/", "", trim($superpos_id));
 	if (empty($superpos_id))
 		responseCode(500, -1);
-	//TODO: Controllare img type antivirus
     $data = $_POST['photo'];
     $data = str_replace('data:image/png;base64,', '', $data);
+    $data = str_replace('data:image/jpeg;base64,', '', $data);
     $data = str_replace(' ', '+', $data);
-	$data = imagecreatefromstring(base64_decode($data));
+    $data = resize_image($data);
 	$marge_right = 0;
 	$marge_top = 0;
 	$sx = 0;
@@ -522,7 +529,21 @@ if (count($_POST) === 2 && isset($_SESSION['user']['iduser'], $_POST['idphoto'],
         $db->bindParam(3, $_POST['text'], PDO::PARAM_STR); //TODO: Check security
         $db->bindParam(4,$date , PDO::PARAM_STR);
         $db->execute();
-        //TODO: Implementare invio messaggio all'user! se ha la notifica attiva
+        $query = "SELECT name, surname, email, getmailpref FROM users, photos WHERE users.iduser = photos.iduser AND photos.idphoto = ?";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1, $_POST['idphoto'], PDO::PARAM_STR);
+        if ($db->execute())
+        {
+            $result = $db->fetch();
+            if ($result['getmailpref'] == 1)
+            {
+                $fullname = $result['name']." ".$result['surname'];
+                $header = 'Content-type: text/html; charset=UTF-8' . "\r\n";
+                $header .= 'From: <arizzell@student.42.fr>' . "\r\n";
+                $msg = 'Hello '.$fullname.'<br>You have just received a new comment to one of your photos';
+                mail($result['email'],"[NEW COMMENT]", $msg, $header);
+            }
+        }
         $query = "SELECT username, comment FROM users, comments, photos WHERE id_photo = ? AND comments.id_user = users.iduser AND comments.id_photo = photos.idphoto order by date";
         $db = $pdobj->prepare($query);
         $db->bindParam(1, $_POST['idphoto'], PDO::PARAM_STR); //TODO: Check security
@@ -532,6 +553,35 @@ if (count($_POST) === 2 && isset($_SESSION['user']['iduser'], $_POST['idphoto'],
                 echo "<p style=\"margin: 0 0 10px 10px; padding-top: 10px\"><span style=\"font-weight: bold\">{$comment['username']}:</span><span style=\"font-family: 'Roboto', sans-serif\">&nbsp;".htmlspecialchars($comment['comment'])."</span></p>"; //TODO: Check security
             }
         }
+    }
+    catch (PDOException $e)
+    {
+        die($e->getMessage());
+    }
+}
+
+//REMOVE PHOTO
+if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['rmphoto']))
+{
+    global $DB_DNS;
+    global $DB_USER;
+    global $DB_PASSWORD;
+    try {
+        $pdobj = new PDO($DB_DNS, $DB_USER, $DB_PASSWORD);
+        $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    } catch (PDOException $e) {
+        responseCode(408, -1);
+        die('Connection failed: ' . $e->getMessage());
+    }
+    try {
+        $query = "DELETE FROM photos WHERE idphoto = ? AND iduser = ?";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1, $_POST['rmphoto'], PDO::PARAM_STR); //TODO: Check security
+        $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+        if ($db->execute())
+            if (file_exists("$_SERVER[DOCUMENT_ROOT]/userphoto/".$_POST['rmphoto'].".png")) //TODO: SUPER SECURITY CHECK ENABLE REMOVE ALL!!!
+                unlink("$_SERVER[DOCUMENT_ROOT]/userphoto/".$_POST['rmphoto'].".png");
     }
     catch (PDOException $e)
     {
