@@ -406,6 +406,7 @@ img.close-comments {
     max-height: 50%;
     overflow-y: auto;
     margin: 4% auto 0;
+    overflow-wrap: break-word;
 }
 div.textareanbtn-container {
     width: 30%;

@@ -462,6 +462,8 @@ function openComment(commentbtn) {
                 var textarea = document.createElement("textarea");
                 var submitbtn = document.createElement("button");
                 textarea.setAttribute("id", "textarea");
+                textarea.setAttribute("maxlength", "500");
+                textarea.setAttribute("autofocus", "true");
                 textarea.setAttribute("rows", "5");
                 textarea.setAttribute("style", "resize: none; width: 100%; border: unset; border-top: 1px solid; box-sizing: border-box; outline: unset;");
                 submitbtn.innerHTML = "Comment";
