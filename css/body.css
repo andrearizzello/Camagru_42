@@ -466,6 +466,16 @@ span.fix-skew::first-letter {
     margin: 5px;
     border-radius: 20%;
 }
+#info-editor {
+    background-color: rgba(0,0,0,0.71);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 200;
+    top: 0;
+    left: 0;
+    display: none;
+}
 
 @media screen and (max-width: 600px) {
 
@@ -733,5 +743,8 @@ span.fix-skew::first-letter {
     div.textareanbtn-container {
         width: 90%;
         margin: 0 auto;
+    }
+    #header-personal-zone {
+        text-align: center;
     }
 }

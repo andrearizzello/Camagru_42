@@ -91,6 +91,9 @@ function badValueUP(username, password, toast_error) {
 function closeWindow() {
     document.getElementById("comment-pre-container").style.display = "none";
 }
+function closeWindow2() {
+    document.getElementById("info-editor").style.display = "none";
+}
 function destroy_session() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","backend/functions.php", true);
@@ -522,7 +525,7 @@ function trigger(radio) {
         cameraButton.style.display = "none";
 }
 function removePhoto(idphoto) {
-    if (confirm("You are going to remove this photo.\nAre you sure about that?")) {
+    if (confirm("You are going to remove this photo forever.\nAre you sure?")) {
         var id = idphoto.getAttribute("src").replace("/userphoto/", "").replace(".png", "");
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "backend/functions.php", true);
@@ -534,4 +537,27 @@ function removePhoto(idphoto) {
                     idphoto.remove();
         }
     }
+}
+function editInfo() {
+    document.getElementById("info-editor").style.display = "initial";
+}
+function updateInfo() {
+    var username = document.getElementById("username");
+    var email = document.getElementById("email");
+    var password = document.getElementById("password");
+    var pref = document.getElementById("getmail").checked ? 1 : 0;
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST","backend/functions.php", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("changeinfo=1&username="+username.value+"&email="+email.value+"&password="+password.value+"&emailpref="+pref);
+    xhttp.onreadystatechange = function()
+    {
+        if (xhttp.readyState === 4)
+        {
+            if (xhttp.status === 200)
+                alert("Data updated!");
+            if (xhttp.status === 400)
+                alert("Error");
+        }
+    };
 }

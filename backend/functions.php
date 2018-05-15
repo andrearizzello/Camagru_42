@@ -44,6 +44,11 @@ function activateUser($token) {
         $db = $pdobj->prepare($query);
         $db->bindParam(1,$result['iduser'], PDO::PARAM_INT);
         $db->execute();
+        $query = "UPDATE users SET hash = ? where iduser = ?";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1, $result['iduser'], PDO::PARAM_STR);
+        $db->bindParam(2, $result['iduser'], PDO::PARAM_INT);
+        $db->execute();
         return (0);
     }
     else
@@ -320,7 +325,7 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
 		default:
 			responseCode(500, -1);
 	}
-	$name = getdate()[0]."_".$_SESSION['user']['iduser'];
+	$name = str_replace(".", "", microtime(true))."_".$_SESSION['user']['iduser'];
 	imagecopy($data, $superpos, (imagesx($data)/2) - $marge_right, $marge_top, 0, 0, $sx, $sy);
     imagepng($data, "$_SERVER[DOCUMENT_ROOT]/userphoto/$name.png");
     global $DB_DNS;
@@ -350,7 +355,7 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
     }
 }
 
-//GET ALL PHOTO FROM THE STARTING POINT $_POST['getphoto']
+//GET ALL PHOTO FROM THE STARTING POINT $_POST['getphoto'] (id photo)
 if (count($_POST) === 1 && isset($_POST['getphoto']))
 {
     global $DB_DNS;
@@ -585,6 +590,65 @@ if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['rmphoto'])
     }
     catch (PDOException $e)
     {
+        die($e->getMessage());
+    }
+}
+
+//UPDATE PERSONAL DATA
+if (count($_POST) === 5 && isset($_SESSION['user']['iduser'], $_POST['changeinfo'], $_POST['username'], $_POST['email'], $_POST['password'], $_POST['emailpref']))
+{
+    global $DB_DNS;
+    global $DB_USER;
+    global $DB_PASSWORD;
+    try {
+        $pdobj = new PDO($DB_DNS, $DB_USER, $DB_PASSWORD);
+        $pdobj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdobj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    } catch (PDOException $e) {
+        responseCode(408, -1);
+        die('Connection failed: ' . $e->getMessage());
+    }
+    try {
+        $username = preg_replace("/[^a-zA-Z0-9]/", "", trim($_POST['username']));
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        $pref = (int)$_POST['emailpref'];
+        if (strlen($username) > 0) {
+            $query = "UPDATE users SET username = ? WHERE iduser = ?";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $username, PDO::PARAM_STR); //TODO: Check security
+            $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            $db->execute();
+        }
+        if (strlen($email) > 0)
+        {
+            if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+                responseCode(400, -1);
+            $query = "UPDATE users SET email = ? WHERE iduser = ?";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $email, PDO::PARAM_STR); //TODO: Check security
+            $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            $db->execute();
+        }
+        if (strlen($password) > 0)
+        {
+            $password = hash("whirlpool", preg_replace("/[^a-zA-Z0-9]/", "", trim($password)));
+            $query = "UPDATE users SET password = ? WHERE iduser = ?";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $password, PDO::PARAM_STR); //TODO: Check security
+            $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            $db->execute();
+        }
+        $query = "UPDATE users SET getmailpref = ? WHERE iduser = ?";
+        $db = $pdobj->prepare($query);
+        $db->bindParam(1, $pref, PDO::PARAM_STR); //TODO: Check security
+        $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+        $db->execute();
+        responseCode(200, 0);
+    }
+    catch (PDOException $e)
+    {
+        responseCode(400, -1);
         die($e->getMessage());
     }
 }

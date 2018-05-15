@@ -49,9 +49,10 @@ if (!isset($_SESSION['user']))
     </script>
 </head>
 <body>
-<header style="text-align: center">
-    <h1 style="font-family: 'Roboto', sans-serif; font-size: 300%; margin-top: 1.5vw">Your personal zone</h1>
-    <button id="first" class="btn-red-index delay" style="position: absolute; float: unset" onclick="destroy_session()"><span class="fix-skew">Logout</span></button>
+<header id="header-personal-zone">
+    <h1 style="font-family: 'Roboto', sans-serif; font-size: 300%; margin-top: 1.5vw; margin-left: 1.5vw; display: inline-block">Your personal zone</h1>
+    <button id="first" class="btn-red-index delay" onclick="destroy_session()"><span class="fix-skew">Logout</span></button>
+    <button id="second" class="btn-blue" onclick="editInfo()"><span class="fix-skew">Edit Profile</span></button>
 </header>
 <div class="flex-container">
     <div class="superpos-container">
@@ -79,6 +80,22 @@ if (!isset($_SESSION['user']))
         <input id="file-picker" type="file" accept="image/x-png, image/jpeg" style="display: none; position: absolute">
     </div>
     <div id="prev-cont" class="preview-container">
+    </div>
+</div>
+<div id="info-editor">
+    <img src="imgs/close.svg" class="close-comments" onclick="closeWindow2()">
+    <div style="width: 80%; background-color: white; margin: 0 auto; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px">
+        <div class="register-centered-div">
+            <div class="register-container">
+                <h1>Update info</h1>
+                <input id="username" type="text" placeholder="Username" maxlength="12" required autofocus autocomplete="off">
+                <input id="email" type="email" placeholder="E-mail" maxlength="100" required autocomplete="off">
+                <input id="password" type="password" placeholder="Password" required onkeyup="passwordComplexity()" autocomplete="off">
+                <hr id="pwd_indicator" class="password_strength">
+                <label style="float: left;"><input id="getmail" type="checkbox" style="width: unset; display: inline-block;" checked><span style="position: relative; top: -8px">I wish to receive an e-mail every time i receive a new comment on my photos.</span></label>
+                <button class="btn-orange register" style="margin-bottom: 30px" type="button" onclick="updateInfo()"><span class="fix-skew">Update</span></button>
+            </div>
+        </div>
     </div>
 </div>
 <footer>
