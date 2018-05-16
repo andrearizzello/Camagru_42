@@ -2,20 +2,6 @@
 session_start();
 include("$_SERVER[DOCUMENT_ROOT]/config/database.php");
 
-function debug($string_to_write) {
-    //TODO: REMOVE!
-    $tmp = fopen("debug.log", "w");
-    $total = "";
-    if (is_array($string_to_write))
-    {
-        foreach ($string_to_write as $key => $value)
-            $total .= $key.":".$value.PHP_EOL;
-        fwrite($tmp, $total);
-    }
-    else
-        fwrite($tmp, $string_to_write);
-    fclose($tmp);
-}
 function responseCode($http_code, $exit_code) {
     header("HTTP/1.0 $http_code");
     exit($exit_code);
@@ -78,7 +64,7 @@ function printImagesUser()
                 echo "<img src='/userphoto/{$img['idphoto']}.png' style='width: 80%' onclick='removePhoto(this)'>";
         }
         else
-            die("RIP");
+            die("none");
     }
     catch (PDOException $exception)
     {
@@ -86,6 +72,7 @@ function printImagesUser()
     }
 }
 function getLikes($idphoto) {
+    $idphoto = preg_replace("/[^0-9_]/", "", trim($idphoto));
     global $DB_DNS;
     global $DB_USER;
     global $DB_PASSWORD;
@@ -124,11 +111,15 @@ function getComments($idphoto) {
     return ($result['result']);
 }
 function resize_image($data) {
-    list($width, $height) = getimagesizefromstring(base64_decode($data));
-    $src = imagecreatefromstring(base64_decode($data));
-    $final = imagecreatetruecolor(640, 480);
-    imagecopyresampled($final, $src, 0, 0, 0, 0, 640, 480, $width, $height);
-    return $final;
+    if (getimagesizefromstring(base64_decode($data)))
+    {
+        list($width, $height) = getimagesizefromstring(base64_decode($data));
+        $src = imagecreatefromstring(base64_decode($data));
+        $final = imagecreatetruecolor(640, 480);
+        imagecopyresampled($final, $src, 0, 0, 0, 0, 640, 480, $width, $height);
+        return $final;
+    }
+    return (null);
 }
 
 //DESTROY SESSION
@@ -293,7 +284,12 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
     $data = str_replace('data:image/png;base64,', '', $data);
     $data = str_replace('data:image/jpeg;base64,', '', $data);
     $data = str_replace(' ', '+', $data);
-    $data = resize_image($data);
+    $data = @resize_image($data);
+    if ($data === null)
+    {
+        printImagesUser();
+        exit(1);
+    }
 	$marge_right = 0;
 	$marge_top = 0;
 	$sx = 0;
@@ -347,7 +343,7 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
         if ($db->execute())
             printImagesUser();
         else
-            die("RIP");
+            die("none");
     }
     catch (PDOException $exception)
     {
@@ -355,7 +351,7 @@ if (count($_POST) === 2 && isset($_POST['photo'], $_POST['superpos'], $_SESSION[
     }
 }
 
-//GET ALL PHOTO FROM THE STARTING POINT $_POST['getphoto'] (id photo)
+//GET ALL PHOTO FROM THE STARTING POINT $_POST['getphoto']
 if (count($_POST) === 1 && isset($_POST['getphoto']))
 {
     global $DB_DNS;
@@ -374,7 +370,7 @@ if (count($_POST) === 1 && isset($_POST['getphoto']))
         $db = $pdobj->prepare($query);
         $db->execute();
         $img_array = $db->fetchAll();
-        $start = (int)$_POST['getphoto'];
+        $start = (int)preg_replace("/[^0-9]/", "", $_POST['getphoto']);
         if ($start < 0)
             exit(1);
         if ($start !== 0)
@@ -442,6 +438,9 @@ if (count($_POST) === 1 && isset($_POST['getphotos']))
 //PUT LIKE
 if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['putlike']))
 {
+    $id_photo = preg_replace("/[^0-9_]/", "", trim($_POST['putlike']));
+    if (empty($id_photo))
+        responseCode(408, -1);
     global $DB_DNS;
     global $DB_USER;
     global $DB_PASSWORD;
@@ -453,34 +452,39 @@ if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['putlike'])
         responseCode(408, -1);
         die('Connection failed: ' . $e->getMessage());
     }
-    $query = "SELECT * FROM `likes` WHERE id_user = ? AND id_photo = ?";
+    $query = "SELECT idphoto FROM photos WHERE idphoto = ?";
     $db = $pdobj->prepare($query);
-    $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
-    $db->bindParam(2, $_POST['putlike'], PDO::PARAM_STR); //TODO: Check security
+    $db->bindParam(1, $id_photo, PDO::PARAM_STR);
     $db->execute();
     $result = $db->fetch(PDO::FETCH_ASSOC);
-    if (!$result)
-    {
-        $query = "INSERT INTO likes (id_user, id_photo) VALUES (?, ?)";
+    if ($result) {
+        $query = "SELECT * FROM `likes` WHERE id_user = ? AND id_photo = ?";
         $db = $pdobj->prepare($query);
         $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
-        $db->bindParam(2, $_POST['putlike'], PDO::PARAM_STR); //TODO: Check security
+        $db->bindParam(2, $id_photo, PDO::PARAM_STR);
         $db->execute();
+        $result = $db->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            $query = "INSERT INTO likes (id_user, id_photo) VALUES (?, ?)";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            $db->bindParam(2, $id_photo, PDO::PARAM_STR);
+            $db->execute();
+        } else {
+            $query = "DELETE FROM likes where id_user = ? AND id_photo = ?";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            $db->bindParam(2, $id_photo, PDO::PARAM_STR);
+            $db->execute();
+        }
+        echo $id_photo . " " . getLikes($id_photo);
     }
-    else
-    {
-        $query = "DELETE FROM likes where id_user = ? AND id_photo = ?";
-        $db = $pdobj->prepare($query);
-        $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
-        $db->bindParam(2, $_POST['putlike'], PDO::PARAM_STR); //TODO: Check security
-        $db->execute();
-    }
-    echo $_POST['putlike']." ".getLikes($_POST['putlike']); //TODO: Check security
 }
 
 //OPEN/GET COMMENTS
 if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['getcomments']))
 {
+    $getcomments = preg_replace("/[^0-9_]/", "", trim($_POST['getcomments']));
     global $DB_DNS;
     global $DB_USER;
     global $DB_PASSWORD;
@@ -492,28 +496,34 @@ if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['getcomment
         responseCode(408, -1);
         die('Connection failed: ' . $e->getMessage());
     }
-    try {
-        $query = "SELECT username, comment FROM users, comments, photos WHERE id_photo = ? AND comments.id_user = users.iduser AND comments.id_photo = photos.idphoto order by date";
-        $db = $pdobj->prepare($query);
-        $db->bindParam(1, $_POST['getcomments'], PDO::PARAM_STR); //TODO: Check security
-        if ($db->execute()) {
-            $result = $db->fetchAll();
-            foreach ($result as $comment) {
-                echo "<p style=\"margin: 0 0 10px 10px; padding-top: 10px\"><span style=\"font-weight: bold\">{$comment['username']}:</span><span style=\"font-family: 'Roboto', sans-serif\">&nbsp;".htmlspecialchars($comment['comment'])."</span></p>"; //TODO: Check security
-            }
+    $query = "SELECT idphoto FROM photos WHERE idphoto = ?";
+    $db = $pdobj->prepare($query);
+    $db->bindParam(1, $getcomments, PDO::PARAM_STR);
+    $db->execute();
+    $result = $db->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        try {
+            $query = "SELECT username, comment FROM users, comments, photos WHERE id_photo = ? AND comments.id_user = users.iduser AND comments.id_photo = photos.idphoto order by `date` ASC";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $getcomments, PDO::PARAM_STR);
+            if ($db->execute()) {
+                $result = $db->fetchAll();
+                foreach ($result as $comment) {
+                    echo "<p style=\"margin: 0 0 10px 10px; padding-top: 10px\"><span style=\"font-weight: bold\">{$comment['username']}:</span><span style=\"font-family: 'Roboto', sans-serif\">&nbsp;" . htmlspecialchars($comment['comment']) . "</span></p>";
+                }
+            } else
+                die("none");
+        } catch (PDOException $e) {
+            die($e->getMessage());
         }
-        else
-            die("RIP");
-    }
-    catch (PDOException $e)
-    {
-        die($e->getMessage());
     }
 }
 
 //PUSH COMMENT
 if (count($_POST) === 2 && isset($_SESSION['user']['iduser'], $_POST['idphoto'], $_POST['text']))
 {
+    $idphoto = preg_replace("/[^0-9_]/", "", trim($_POST['idphoto']));
+    $text = preg_replace("/[^a-zA-Z0-9]/", "", trim($_POST['text']));
     global $DB_DNS;
     global $DB_USER;
     global $DB_PASSWORD;
@@ -525,49 +535,53 @@ if (count($_POST) === 2 && isset($_SESSION['user']['iduser'], $_POST['idphoto'],
         responseCode(408, -1);
         die('Connection failed: ' . $e->getMessage());
     }
-    try {
-        $query = "INSERT INTO comments (id_user, id_photo, comment, date) VALUES (?, ?, ?, ?)";
-        $db = $pdobj->prepare($query);
-        $date = date("Y-m-d h:i:s");
-        $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
-        $db->bindParam(2, $_POST['idphoto'], PDO::PARAM_STR); //TODO: Check security
-        $db->bindParam(3, $_POST['text'], PDO::PARAM_STR); //TODO: Check security
-        $db->bindParam(4,$date , PDO::PARAM_STR);
-        $db->execute();
-        $query = "SELECT name, surname, email, getmailpref FROM users, photos WHERE users.iduser = photos.iduser AND photos.idphoto = ?";
-        $db = $pdobj->prepare($query);
-        $db->bindParam(1, $_POST['idphoto'], PDO::PARAM_STR);
-        if ($db->execute())
-        {
-            $result = $db->fetch();
-            if ($result['getmailpref'] == 1)
-            {
-                $fullname = $result['name']." ".$result['surname'];
-                $header = 'Content-type: text/html; charset=UTF-8' . "\r\n";
-                $header .= 'From: <arizzell@student.42.fr>' . "\r\n";
-                $msg = 'Hello '.$fullname.'<br>You have just received a new comment to one of your photos';
-                mail($result['email'],"[NEW COMMENT]", $msg, $header);
+    $query = "SELECT idphoto FROM photos WHERE idphoto = ?";
+    $db = $pdobj->prepare($query);
+    $db->bindParam(1, $idphoto, PDO::PARAM_STR);
+    $db->execute();
+    $result = $db->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        try {
+            $query = "INSERT INTO comments (id_user, id_photo, comment, date) VALUES (?, ?, ?, ?)";
+            $db = $pdobj->prepare($query);
+            $date = date("Y-m-d h:i:s");
+            $db->bindParam(1, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            $db->bindParam(2, $idphoto, PDO::PARAM_STR);
+            $db->bindParam(3, $text, PDO::PARAM_STR);
+            $db->bindParam(4, $date, PDO::PARAM_STR);
+            $db->execute();
+            $query = "SELECT name, surname, email, getmailpref FROM users, photos WHERE users.iduser = photos.iduser AND photos.idphoto = ?";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $idphoto, PDO::PARAM_STR);
+            if ($db->execute()) {
+                $result = $db->fetch();
+                if ($result['getmailpref'] == 1) {
+                    $fullname = $result['name'] . " " . $result['surname'];
+                    $header = 'Content-type: text/html; charset=UTF-8' . "\r\n";
+                    $header .= 'From: <arizzell@student.42.fr>' . "\r\n";
+                    $msg = 'Hello ' . $fullname . '<br>You have just received a new comment to one of your photos';
+                    mail($result['email'], "[NEW COMMENT]", $msg, $header);
+                }
             }
-        }
-        $query = "SELECT username, comment FROM users, comments, photos WHERE id_photo = ? AND comments.id_user = users.iduser AND comments.id_photo = photos.idphoto order by date";
-        $db = $pdobj->prepare($query);
-        $db->bindParam(1, $_POST['idphoto'], PDO::PARAM_STR); //TODO: Check security
-        if ($db->execute()) {
-            $result = $db->fetchAll();
-            foreach ($result as $comment) {
-                echo "<p style=\"margin: 0 0 10px 10px; padding-top: 10px\"><span style=\"font-weight: bold\">{$comment['username']}:</span><span style=\"font-family: 'Roboto', sans-serif\">&nbsp;".htmlspecialchars($comment['comment'])."</span></p>"; //TODO: Check security
+            $query = "SELECT username, comment FROM users, comments, photos WHERE id_photo = ? AND comments.id_user = users.iduser AND comments.id_photo = photos.idphoto order by `date` ASC";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $idphoto, PDO::PARAM_STR);
+            if ($db->execute()) {
+                $result = $db->fetchAll();
+                foreach ($result as $comment) {
+                    echo "<p style=\"margin: 0 0 10px 10px; padding-top: 10px\"><span style=\"font-weight: bold\">{$comment['username']}:</span><span style=\"font-family: 'Roboto', sans-serif\">&nbsp;" . htmlspecialchars($comment['comment']) . "</span></p>";
+                }
             }
+        } catch (PDOException $e) {
+            die($e->getMessage());
         }
-    }
-    catch (PDOException $e)
-    {
-        die($e->getMessage());
     }
 }
 
 //REMOVE PHOTO
 if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['rmphoto']))
 {
+    $idphoto = preg_replace("/[^0-9_]/", "", trim($_POST['rmphoto']));
     global $DB_DNS;
     global $DB_USER;
     global $DB_PASSWORD;
@@ -580,13 +594,21 @@ if (count($_POST) === 1 && isset($_SESSION['user']['iduser'], $_POST['rmphoto'])
         die('Connection failed: ' . $e->getMessage());
     }
     try {
-        $query = "DELETE FROM photos WHERE idphoto = ? AND iduser = ?";
+        $query = "SELECT idphoto FROM photos WHERE idphoto = ? AND iduser = ?";
         $db = $pdobj->prepare($query);
-        $db->bindParam(1, $_POST['rmphoto'], PDO::PARAM_STR); //TODO: Check security
+        $db->bindParam(1, $idphoto, PDO::PARAM_STR);
         $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
-        if ($db->execute())
-            if (file_exists("$_SERVER[DOCUMENT_ROOT]/userphoto/".$_POST['rmphoto'].".png")) //TODO: SUPER SECURITY CHECK ENABLE REMOVE ALL!!!
-                unlink("$_SERVER[DOCUMENT_ROOT]/userphoto/".$_POST['rmphoto'].".png");
+        $db->execute();
+        $result = $db->fetch();
+        if ($result) {
+            $query = "DELETE FROM photos WHERE idphoto = ? AND iduser = ?";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $idphoto, PDO::PARAM_STR);
+            $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            if ($db->execute())
+                if (@file_exists("$_SERVER[DOCUMENT_ROOT]/userphoto/" . $idphoto . ".png"))
+                    @unlink("$_SERVER[DOCUMENT_ROOT]/userphoto/" . $idphoto . ".png");
+        }
     }
     catch (PDOException $e)
     {
@@ -612,11 +634,11 @@ if (count($_POST) === 5 && isset($_SESSION['user']['iduser'], $_POST['changeinfo
         $username = preg_replace("/[^a-zA-Z0-9]/", "", trim($_POST['username']));
         $email = $_POST['email'];
         $password = $_POST['password'];
-        $pref = (int)$_POST['emailpref'];
+        $pref = preg_replace("/[^0-1]/", "", trim($_POST['emailpref']));
         if (strlen($username) > 0) {
             $query = "UPDATE users SET username = ? WHERE iduser = ?";
             $db = $pdobj->prepare($query);
-            $db->bindParam(1, $username, PDO::PARAM_STR); //TODO: Check security
+            $db->bindParam(1, $username, PDO::PARAM_STR);
             $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
             $db->execute();
         }
@@ -626,7 +648,7 @@ if (count($_POST) === 5 && isset($_SESSION['user']['iduser'], $_POST['changeinfo
                 responseCode(400, -1);
             $query = "UPDATE users SET email = ? WHERE iduser = ?";
             $db = $pdobj->prepare($query);
-            $db->bindParam(1, $email, PDO::PARAM_STR); //TODO: Check security
+            $db->bindParam(1, $email, PDO::PARAM_STR);
             $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
             $db->execute();
         }
@@ -635,16 +657,18 @@ if (count($_POST) === 5 && isset($_SESSION['user']['iduser'], $_POST['changeinfo
             $password = hash("whirlpool", preg_replace("/[^a-zA-Z0-9]/", "", trim($password)));
             $query = "UPDATE users SET password = ? WHERE iduser = ?";
             $db = $pdobj->prepare($query);
-            $db->bindParam(1, $password, PDO::PARAM_STR); //TODO: Check security
+            $db->bindParam(1, $password, PDO::PARAM_STR);
             $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
             $db->execute();
         }
-        $query = "UPDATE users SET getmailpref = ? WHERE iduser = ?";
-        $db = $pdobj->prepare($query);
-        $db->bindParam(1, $pref, PDO::PARAM_STR); //TODO: Check security
-        $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
-        $db->execute();
-        responseCode(200, 0);
+        if (strlen($pref) > 0) {
+            $query = "UPDATE users SET getmailpref = ? WHERE iduser = ?";
+            $db = $pdobj->prepare($query);
+            $db->bindParam(1, $pref, PDO::PARAM_STR);
+            $db->bindParam(2, $_SESSION['user']['iduser'], PDO::PARAM_INT);
+            $db->execute();
+            responseCode(200, 0);
+        }
     }
     catch (PDOException $e)
     {

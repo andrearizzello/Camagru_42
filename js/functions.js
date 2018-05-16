@@ -89,10 +89,16 @@ function badValueUP(username, password, toast_error) {
     return (0);
 }
 function closeWindow() {
-    document.getElementById("comment-pre-container").style.display = "none";
+    var preco = document.getElementById("comment-pre-container");
+    if (preco) {
+        preco.style.display = "none";
+    }
 }
 function closeWindow2() {
-    document.getElementById("info-editor").style.display = "none";
+    var infoedit = document.getElementById("info-editor");
+    if (infoedit) {
+        infoedit.style.display = "none";
+    }
 }
 function destroy_session() {
     var xhttp = new XMLHttpRequest();
@@ -112,14 +118,17 @@ function getCamera() {
         video: true
     };
     function success(stream) {
-        video.srcObject = stream;
+        if (video)
+            video.srcObject = stream;
     }
     function error() {
-        document.getElementById("camera-icon").onclick = takePicturefromPic;
+        var camicon = document.getElementById("camera-icon");
+        if (camicon)
+            camicon.onclick = takePicturefromPic;
         var container = document.getElementById("camera-container");
         var filepicker = document.getElementById("file-picker");
         var cameraImg = document.getElementById("camera-img");
-        if (container)
+        if (container && filepicker && cameraImg)
         {
             document.getElementById("camera").remove();
             filepicker.setAttribute("style", "display: initial; position: absolute");
@@ -134,7 +143,9 @@ function getCamera() {
             }
         }
         function done(img) {
-            document.getElementById("camera-img").setAttribute('src', img.target.result);
+            var camimg = document.getElementById("camera-img");
+            if (camimg && img)
+                camimg.setAttribute('src', img.target.result);
         }
     }
     navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
@@ -210,30 +221,36 @@ function openComment(commentbtn) {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","backend/functions.php", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("getcomments="+commentbtn.parentNode.getAttribute('id'));
-    xhttp.onreadystatechange = function()
-    {
-        if (xhttp.readyState === 4)
-            if(xhttp.status === 200)
-            {
-                commentsPreContainer.style.display = "initial";
-                commentsContainer.innerHTML = xhttp.responseText;
-                var textarea = document.createElement("textarea");
-                var submitbtn = document.createElement("button");
-                textarea.setAttribute("id", "textarea");
-                textarea.setAttribute("maxlength", "500");
-                textarea.setAttribute("autofocus", "true");
-                textarea.setAttribute("rows", "5");
-                textarea.setAttribute("style", "resize: none; width: 100%; border: unset; border-top: 1px solid; box-sizing: border-box; outline: unset;");
-                submitbtn.innerHTML = "Comment";
-                submitbtn.setAttribute("id", commentbtn.parentNode.getAttribute('id'));
-                submitbtn.setAttribute("style", "background-color: white; border: 2px solid black;");
-                submitbtn.onclick = function (){pushComment(this)};
-                textnbtn.innerHTML = "";
-                textnbtn.appendChild(textarea);
-                textnbtn.appendChild(submitbtn);
-            }
-    };
+    if (commentbtn) {
+        xhttp.send("getcomments=" + commentbtn.parentNode.getAttribute('id'));
+        xhttp.onreadystatechange = function () {
+            if (xhttp.readyState === 4)
+                if (xhttp.status === 200) {
+                    if (commentsPreContainer)
+                        commentsPreContainer.style.display = "initial";
+                    if (commentsContainer)
+                        commentsContainer.innerHTML = xhttp.responseText;
+                    var textarea = document.createElement("textarea");
+                    var submitbtn = document.createElement("button");
+                    textarea.setAttribute("id", "textarea");
+                    textarea.setAttribute("maxlength", "500");
+                    textarea.setAttribute("autofocus", "true");
+                    textarea.setAttribute("rows", "5");
+                    textarea.setAttribute("style", "resize: none; width: 100%; border: unset; border-top: 1px solid; box-sizing: border-box; outline: unset;");
+                    submitbtn.innerHTML = "Comment";
+                    submitbtn.setAttribute("id", commentbtn.parentNode.getAttribute('id'));
+                    submitbtn.setAttribute("style", "background-color: white; border: 2px solid black;");
+                    submitbtn.onclick = function () {
+                        pushComment(this)
+                    };
+                    if (textnbtn) {
+                        textnbtn.innerHTML = "";
+                        textnbtn.appendChild(textarea);
+                        textnbtn.appendChild(submitbtn);
+                    }
+                }
+        };
+    }
 }
 function passwordComplexity() {
     var indicator = document.getElementById("pwd_indicator");
@@ -252,17 +269,20 @@ function pushComment(btn) {
     var xhttp = new XMLHttpRequest();
     var comment = document.getElementById("textarea");
     var commentsContainer = document.getElementById("comment-container");
-    comment.value = comment.value.trim();
-    if (comment.value.length !== 0) {
-        xhttp.open("POST", "backend/functions.php", true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send("idphoto=" + btn.getAttribute('id') + "&text=" +comment.value);
-        comment.value = "";
-        xhttp.onreadystatechange = function () {
-            if (xhttp.readyState === 4)
-                if (xhttp.status === 200) {
-                    commentsContainer.innerHTML = xhttp.responseText;
-                }
+    if (comment && btn) {
+        comment.value = comment.value.trim();
+        if (comment.value.length !== 0) {
+            xhttp.open("POST", "backend/functions.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("idphoto=" + btn.getAttribute('id') + "&text=" + comment.value);
+            comment.value = "";
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState === 4)
+                    if (xhttp.status === 200) {
+                        if (commentsContainer)
+                            commentsContainer.innerHTML = xhttp.responseText;
+                    }
+            }
         }
     }
 }
@@ -270,16 +290,17 @@ function putLike(likebtn) {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","backend/functions.php", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("putlike="+likebtn.parentNode.getAttribute('id'));
-    xhttp.onreadystatechange = function()
-    {
-        if (xhttp.readyState === 4)
-            if(xhttp.status === 200)
-            {
-                var x = document.getElementById(xhttp.responseText.substr(0, xhttp.responseText.indexOf(" ")));
-                x.childNodes[3].innerHTML = xhttp.responseText.substr(xhttp.responseText.indexOf(" ") + 1, xhttp.responseText.length);
-            }
-    };
+    if (likebtn) {
+        xhttp.send("putlike=" + likebtn.parentNode.getAttribute('id'));
+        xhttp.onreadystatechange = function () {
+            if (xhttp.readyState === 4)
+                if (xhttp.status === 200) {
+                    var x = document.getElementById(xhttp.responseText.substr(0, xhttp.responseText.indexOf(" ")));
+                    if (x)
+                        x.childNodes[3].innerHTML = xhttp.responseText.substr(xhttp.responseText.indexOf(" ") + 1, xhttp.responseText.length);
+                }
+        };
+    }
 }
 function recoverPassword() {
     var email = document.getElementById("username");
@@ -291,58 +312,56 @@ function recoverPassword() {
     var toast_error = document.getElementById("toast_error");
     var toast_ok = document.getElementById("toast_ok");
 
-    btnLogin.style.display = "none";
-    password.style.display = "none";
-    btnLabel.innerHTML = "Send activation link";
-    formTitle.innerHTML = "Recover Password";
-    email.placeholder = "Email";
-    email.maxLength = 100;
-    btnRestore.onclick = function () {
-        if (!email || !email.value.length || email.value.indexOf("@") === -1)
-        {
-            if (toast_error)
-            {
-                toast_error.innerHTML = "Error, please check email field";
-                toast_error.className = "show";
-                setTimeout(function() {
-                    toast_error.className = toast_error.className.replace("show", "");
-                }, 3000);
+    if (email && password && btnLogin && btnLabel && formTitle && btnRestore && toast_error && toast_ok) {
+        btnLogin.style.display = "none";
+        password.style.display = "none";
+        btnLabel.innerHTML = "Send activation link";
+        formTitle.innerHTML = "Recover Password";
+        email.placeholder = "Email";
+        email.maxLength = 100;
+        btnRestore.onclick = function () {
+            if (!email || !email.value.length || email.value.indexOf("@") === -1) {
+                if (toast_error) {
+                    toast_error.innerHTML = "Error, please check email field";
+                    toast_error.className = "show";
+                    setTimeout(function () {
+                        toast_error.className = toast_error.className.replace("show", "");
+                    }, 3000);
+                }
             }
-        }
-        else {
-            var xhttp = new XMLHttpRequest();
-            xhttp.open("POST", "backend/functions.php", true);
-            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhttp.send("email="+email.value);
-            xhttp.onreadystatechange = function() {
-                if (this.readyState === 4) {
-                    if (this.status === 201) {
-                        if (toast_ok) {
-                            toast_ok.innerHTML = "A new password has been sent!";
-                            toast_ok.className = "show";
-                            setTimeout(function () {
-                                toast_ok.className = toast_ok.className.replace("show", "");
-                            }, 3000);
+            else {
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "backend/functions.php", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send("email=" + email.value);
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState === 4) {
+                        if (this.status === 201) {
+                            if (toast_ok) {
+                                toast_ok.innerHTML = "A new password has been sent!";
+                                toast_ok.className = "show";
+                                setTimeout(function () {
+                                    toast_ok.className = toast_ok.className.replace("show", "");
+                                }, 3000);
+                            }
                         }
-                    }
-                    if (this.status === 400)
-                    {
-                        if (toast_error) {
-                            toast_error.innerHTML = "Error, please check the email field";
-                            toast_error.className = "show";
-                            setTimeout(function () {
-                                toast_error.className = toast_error.className.replace("show", "");
-                            }, 3000);
+                        if (this.status === 400) {
+                            if (toast_error) {
+                                toast_error.innerHTML = "Error, please check the email field";
+                                toast_error.className = "show";
+                                setTimeout(function () {
+                                    toast_error.className = toast_error.className.replace("show", "");
+                                }, 3000);
+                            }
                         }
-                    }
-                    if (this.status === 404)
-                    {
-                        if (toast_error) {
-                            toast_error.innerHTML = "Error, user not found";
-                            toast_error.className = "show";
-                            setTimeout(function () {
-                                toast_error.className = toast_error.className.replace("show", "");
-                            }, 3000);
+                        if (this.status === 404) {
+                            if (toast_error) {
+                                toast_error.innerHTML = "Error, user not found";
+                                toast_error.className = "show";
+                                setTimeout(function () {
+                                    toast_error.className = toast_error.className.replace("show", "");
+                                }, 3000);
+                            }
                         }
                     }
                 }
@@ -433,12 +452,12 @@ function takePhotoFrom(start) {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","backend/functions.php", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("getphoto="+start);
-    xhttp.onreadystatechange = function()
-    {
+    xhttp.send("getphoto=" + start);
+    xhttp.onreadystatechange = function () {
         if (xhttp.readyState === 4)
-            if(xhttp.status === 200)
-                container.innerHTML = xhttp.responseText;
+            if (xhttp.status === 200)
+                if (container)
+                    container.innerHTML = xhttp.responseText;
     };
 }
 function takePicture() {
@@ -449,49 +468,53 @@ function takePicture() {
     var glasses = document.getElementById("pic-glasses");
     var pipe = document.getElementById("pic-pipe");
 
-    canvas.className = "photo-canvas";
-    canvas.width = camera.videoWidth;
-    canvas.height = camera.videoHeight;
-    canvas.getContext('2d').drawImage(camera, 0, 0);
-    if (hat.checked || glasses.checked || pipe.checked)
-    {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("POST","backend/functions.php", true);
-		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		if (document.getElementById("pic-hat").checked)
-			xhttp.send("photo="+canvas.toDataURL("image/png", 1)+"&superpos=1");
-		else if (document.getElementById("pic-glasses").checked)
-			xhttp.send("photo="+canvas.toDataURL("image/png", 1)+"&superpos=2");
-		else if (document.getElementById("pic-pipe").checked)
-			xhttp.send("photo="+canvas.toDataURL("image/png", 1)+"&superpos=3");
-        xhttp.onreadystatechange = function()
-        {
-            if (xhttp.readyState === 4)
-                if(xhttp.status === 200)
-                    container.innerHTML = xhttp.responseText;
-        };
+    if (canvas && container && camera && hat && glasses && pipe) {
+        canvas.className = "photo-canvas";
+        canvas.width = camera.videoWidth;
+        canvas.height = camera.videoHeight;
+        canvas.getContext('2d').drawImage(camera, 0, 0);
+        if (hat.checked || glasses.checked || pipe.checked) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "backend/functions.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            if (document.getElementById("pic-hat").checked)
+                xhttp.send("photo=" + canvas.toDataURL("image/png", 1) + "&superpos=1");
+            else if (document.getElementById("pic-glasses").checked)
+                xhttp.send("photo=" + canvas.toDataURL("image/png", 1) + "&superpos=2");
+            else if (document.getElementById("pic-pipe").checked)
+                xhttp.send("photo=" + canvas.toDataURL("image/png", 1) + "&superpos=3");
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState === 4)
+                    if (xhttp.status === 200)
+                        container.innerHTML = xhttp.responseText;
+            };
+        }
     }
 }
 function takePicturefromPic() {
-    if (document.getElementById("file-picker").files[0])
-    {
-        var camera = document.getElementById("camera-img");
-        var container = document.getElementById("prev-cont");
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("POST","backend/functions.php", true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        if (document.getElementById("pic-hat").checked)
-            xhttp.send("photo="+camera.getAttribute("src")+"&superpos=1");
-        else if (document.getElementById("pic-glasses").checked)
-            xhttp.send("photo="+camera.getAttribute("src")+"&superpos=2");
-        else if (document.getElementById("pic-pipe").checked)
-            xhttp.send("photo="+camera.getAttribute("src")+"&superpos=3");
-        xhttp.onreadystatechange = function()
-        {
-            if (xhttp.readyState === 4)
-                if(xhttp.status === 200)
-                    container.innerHTML = xhttp.responseText;
-        };
+    var filepicker = document.getElementById("file-picker");
+    var hat = document.getElementById("pic-hat");
+    var glasses = document.getElementById("pic-glasses");
+    var pipe = document.getElementById("pic-pipe");
+    var camera = document.getElementById("camera-img");
+    var container = document.getElementById("prev-cont");
+    if (filepicker && hat && glasses && pipe && camera && container) {
+        if (filepicker.files[0]) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "backend/functions.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            if (hat.checked)
+                xhttp.send("photo=" + camera.getAttribute("src") + "&superpos=1");
+            else if (glasses.checked)
+                xhttp.send("photo=" + camera.getAttribute("src") + "&superpos=2");
+            else if (pipe.checked)
+                xhttp.send("photo=" + camera.getAttribute("src") + "&superpos=3");
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState === 4)
+                    if (xhttp.status === 200)
+                        container.innerHTML = xhttp.responseText;
+            };
+        }
     }
 }
 function trigger(radio) {
@@ -522,42 +545,47 @@ function trigger(radio) {
         }
     }
     else
-        cameraButton.style.display = "none";
+        if (cameraButton)
+            cameraButton.style.display = "none";
 }
 function removePhoto(idphoto) {
     if (confirm("You are going to remove this photo forever.\nAre you sure?")) {
-        var id = idphoto.getAttribute("src").replace("/userphoto/", "").replace(".png", "");
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "backend/functions.php", true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send("rmphoto=" + id);
-        xhttp.onreadystatechange = function () {
-            if (xhttp.readyState === 4)
-                if (xhttp.status === 200)
-                    idphoto.remove();
+        if (idphoto) {
+            var id = idphoto.getAttribute("src").replace("/userphoto/", "").replace(".png", "");
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "backend/functions.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("rmphoto=" + id);
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState === 4)
+                    if (xhttp.status === 200)
+                        idphoto.remove();
+            }
         }
     }
 }
 function editInfo() {
-    document.getElementById("info-editor").style.display = "initial";
+    var infoeditor = document.getElementById("info-editor");
+    if (infoeditor)
+        infoeditor.style.display = "initial";
 }
 function updateInfo() {
     var username = document.getElementById("username");
     var email = document.getElementById("email");
     var password = document.getElementById("password");
     var pref = document.getElementById("getmail").checked ? 1 : 0;
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST","backend/functions.php", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("changeinfo=1&username="+username.value+"&email="+email.value+"&password="+password.value+"&emailpref="+pref);
-    xhttp.onreadystatechange = function()
-    {
-        if (xhttp.readyState === 4)
-        {
-            if (xhttp.status === 200)
-                alert("Data updated!");
-            if (xhttp.status === 400)
-                alert("Error");
-        }
-    };
+    if (username && email && password && pref) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "backend/functions.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("changeinfo=1&username=" + username.value + "&email=" + email.value + "&password=" + password.value + "&emailpref=" + pref);
+        xhttp.onreadystatechange = function () {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200)
+                    alert("Data updated!");
+                if (xhttp.status === 400)
+                    alert("Error");
+            }
+        };
+    }
 }

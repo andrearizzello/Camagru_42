@@ -23,7 +23,8 @@ session_start();
             {
                 if (xhttp.readyState === 4)
                     if(xhttp.status === 200)
-                        container.innerHTML = xhttp.responseText;
+                        if (container)
+                            container.innerHTML = xhttp.responseText;
             };
             var totalpage = 0;
             var xhttpp = new XMLHttpRequest();
@@ -45,7 +46,8 @@ session_start();
                             takePhotoFrom(0);
                         };
                         if (xhttpp.responseText !== "0")
-                            pcontainer.appendChild(btn);
+                            if (pcontainer)
+                                pcontainer.appendChild(btn);
                         while (totalpage > 0) {
                             btn = document.createElement("button");
                             btn.value = start.toString();
@@ -53,7 +55,8 @@ session_start();
                             btn.onclick = function () {
                                 takePhotoFrom(this.value);
                             };
-                            pcontainer.appendChild(btn);
+                            if (pcontainer)
+                                pcontainer.appendChild(btn);
                             totalpage -= 10;
                             start++;
                         }

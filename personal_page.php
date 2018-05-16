@@ -21,8 +21,11 @@ if (!isset($_SESSION['user']))
             var x = document.getElementById("prev-cont");
             if (window.innerWidth <= 600)
             {
-                c.style.transform = "scale("+window.innerWidth/660+")";
-                x.style.top = ((c.getBoundingClientRect().height + 20) - 480) + "px";
+                if (c) {
+                    c.style.transform = "scale(" + window.innerWidth / 660 + ")";
+                    if (x)
+                        x.style.top = ((c.getBoundingClientRect().height + 20) - 480) + "px";
+                }
             }
             var xhttp = new XMLHttpRequest();
             xhttp.open("POST","backend/functions.php", true);
@@ -32,7 +35,8 @@ if (!isset($_SESSION['user']))
             {
                 if (xhttp.readyState === 4)
                     if(xhttp.status === 200)
-                        x.innerHTML = xhttp.responseText;
+                        if (x)
+                            x.innerHTML = xhttp.responseText;
             };
         };
         window.onresize = function () {
@@ -40,11 +44,16 @@ if (!isset($_SESSION['user']))
             var x = document.getElementById("prev-cont");
             if (window.innerWidth <= 600)
             {
-                c.style.transform = "scale("+window.innerWidth/660+")";
-                x.style.top = ((c.getBoundingClientRect().height + 20) - 480) + "px";
+                if (c)
+                {
+                    c.style.transform = "scale("+window.innerWidth/660+")";
+                    if (x)
+                        x.style.top = ((c.getBoundingClientRect().height + 20) - 480) + "px";
+                }
             }
             else
-                c.style.transform = "scale(1)";
+                if (c)
+                    c.style.transform = "scale(1)";
         }
     </script>
 </head>

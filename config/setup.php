@@ -1,6 +1,10 @@
 <?php
 include("database.php");
 
+if (!file_exists('../userphoto')) {
+    mkdir('../userphoto');
+}
+
 $DB_DNS = "mysql:host=127.0.0.1";
 global $DB_USER;
 global $DB_PASSWORD;
