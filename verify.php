@@ -1,5 +1,10 @@
 <?php
-include ("$_SERVER[DOCUMENT_ROOT]/backend/functions.php")
+include ("$_SERVER[DOCUMENT_ROOT]/backend/functions.php");
+if (isset($_SESSION['user']))
+{
+    header("Location: index.php");
+    exit(1);
+}
 ?>
 
 <!DOCTYPE html>

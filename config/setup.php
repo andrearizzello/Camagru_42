@@ -1,7 +1,7 @@
 <?php
 include("database.php");
 
-global $DB_DNS;
+$DB_DNS = "mysql:host=127.0.0.1";
 global $DB_USER;
 global $DB_PASSWORD;
 try {
@@ -12,9 +12,8 @@ try {
     die('Connection failed: ' . $e->getMessage());
 }
 try {
-    $query = file_get_contents("db.sql"); //TODO: FIXARE STO GESUDDIO
-    $stmt = $pdobj->prepare($query);
-    $stmt->execute();
+    $query = file_get_contents("db.sql");
+    $pdobj->exec($query);
 }
 catch (PDOException $e)
 {
